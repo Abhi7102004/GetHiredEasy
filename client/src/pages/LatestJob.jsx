@@ -1,0 +1,40 @@
+import React from "react";
+import { motion } from "framer-motion";
+import LatestJobTrends from "./LatestJobTrends";
+import useGetAllJobs from "@/hooks/useGetAllJobs";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
+const LatestJob = () => {
+  useGetAllJobs();
+  const navigate=useNavigate();
+  const { jobs } = useSelector((store) => store.job);
+  if(!jobs) return <div>Loading...</div>
+  return (
+    <div className="my-20 mx-auto w-full">
+      <h1 className="text-4xl font-bold dark:text-white">
+        <span className="text-purple-500 dark:text-purple-400">Latest</span> &{" "}
+        <span className="text-purple-500 dark:text-purple-400">Top </span>Job
+        Openings
+      </h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-5">
+        {jobs.slice(0, 6).map((job, index) => (
+          <motion.div onClick={()=>navigate(`/description/${job._id}`)}
+            key={index}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.5,
+              delay: index * 0.1,
+              ease: [0.43, 0.13, 0.23, 0.96],
+            }}
+          >
+            <LatestJobTrends job={job} />
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default LatestJob;
