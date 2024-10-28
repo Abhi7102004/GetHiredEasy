@@ -37,7 +37,7 @@ const CreateNewCompany = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto my-10 p-6 bg-white shadow-lg rounded-lg dark:bg-gray-950/50">
+    <div className="max-w-4xl mx-auto my-10 p-6 bg-white/40 dark:bg-gray-950/40 shadow-lg rounded-lg">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
         Your Company Name
       </h1>

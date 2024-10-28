@@ -24,13 +24,13 @@ const userSchema = new mongoose.Schema(
     },
     phoneNumber: {
       type: String,
-      required: true,
-      unique: true, 
+      required:true,
+      unique: true,
       match: [/^\d{10}$/, "Please enter a valid 10-digit phone number"],
     },
     password: {
       type: String,
-      required: true,
+      required:true
     },
     role: {
       type: String,
@@ -60,6 +60,7 @@ const userSchema = new mongoose.Schema(
         ref: "Company",
       },
     },
+
   },
   { timestamps: true }
 );

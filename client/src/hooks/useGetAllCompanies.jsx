@@ -12,7 +12,6 @@ const useGetAllCompanies = () => {
         const response = await apiClient.get(GET_ALL_COMPANIES_ROUTE, {
           withCredentials: true,
         });
-        // console.log(response)
         if (response.data.success) {
           dispatch(setCompanies(response.data.companies));
         }

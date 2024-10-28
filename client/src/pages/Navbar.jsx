@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Sun,
   Moon,
@@ -12,6 +12,7 @@ import {
   Settings,
   LogOut,
   Building,
+  DeleteIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,53 +25,75 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useSelector } from "react-redux";
 import Logout from "./Logout";
 import { DUMMY_PROFILE_URL } from "@/utils/constants";
+import Globe3D from "@/3d-components/Globe3D";
+import DeleteAccount from "./DeleteAccount";
+
 const Navbar = () => {
   const [open, setOpen] = useState(false);
-  const location=useLocation();
+  const [setting, setSetting] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const location = useLocation();
   const { user } = useSelector((store) => store.auth);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(
-    document.body.classList.contains('dark')
+    document.body.classList.contains("dark")
   );
+  const navigate = useNavigate();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
   const toggleTheme = () => {
-    if(darkMode){
-      document.body.classList.remove('dark');
-      localStorage.setItem('theme','light');
-    }
-    else{
-      document.body.classList.add('dark');
-      localStorage.setItem('theme','dark');
+    setDarkMode(!darkMode);
+    if (darkMode) {
+      document.body.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    } else {
+      document.body.classList.add("dark");
+      localStorage.setItem("theme", "dark");
     }
   };
-  const isActive=(path)=>{
-    return location.pathname===path;
-  }
+
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
+
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
-    // Check what your device prefers by default at first render 
     const prefersDark =
       window.matchMedia &&
       window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-    if (storedTheme === "dark" && (storedTheme!=='dark' && prefersDark)) {
+    if (storedTheme === "dark" || (!storedTheme && prefersDark)) {
       document.body.classList.add("dark");
+      setDarkMode(true);
     } else {
       document.body.classList.remove("dark");
+      setDarkMode(false);
     }
+
     const handleDarkModeChange = () => {
       setDarkMode(document.body.classList.contains("dark"));
     };
-    const observer=new MutationObserver(handleDarkModeChange);
-    observer.observe(document.body,{
-       attributeFilter:['class'],
-       attributes:true
-    })
-    return ()=> observer.disconnect();
+
+    const observer = new MutationObserver(handleDarkModeChange);
+    observer.observe(document.body, {
+      attributeFilter: ["class"],
+      attributes: true,
+    });
+    return () => observer.disconnect();
   }, []);
+
   const NavItems = () => (
     <ul className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-8 font-medium items-start">
       {(user?.role !== "recruiter"
@@ -87,7 +110,9 @@ const Navbar = () => {
         <li key={item.name}>
           <Link
             to={item.path}
-            className={`flex ${isActive(item.path) ? "text-purple-700 dark:text-purple-400 ":"" } items-center space-x-2 hover:text-purple-500 transition-colors duration-300 dark:hover:text-purple-500`}
+            className={`flex ${
+              isActive(item.path) ? "text-purple-700 dark:text-purple-400" : ""
+            } items-center space-x-2 hover:text-purple-500 transition-colors duration-300 dark:hover:text-purple-500`}
           >
             <item.icon className="h-5 w-5" />
             <span>{item.name}</span>
@@ -98,7 +123,7 @@ const Navbar = () => {
   );
 
   const UserSection = () => (
-    <div className="mt-8 md:mt-0">
+    <div className="mt-8 lg:mt-0">
       {!user ? (
         <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
           <Link to="/login">
@@ -125,7 +150,13 @@ const Navbar = () => {
                   alt="@shadcn"
                 />
               </Avatar>
-              <span className={`font-medium ${isActive('/profile') ? "text-purple-700 dark:text-purple-400 ":"" } text-gray-800 `}>
+              <span
+                className={`font-medium dark:text-white ${
+                  isActive("/profile")
+                    ? "text-purple-700 dark:text-purple-400"
+                    : ""
+                } text-gray-800`}
+              >
                 {user.fullName}
               </span>
             </div>
@@ -150,25 +181,24 @@ const Navbar = () => {
                 <Link to="/profile">
                   <Button
                     variant="ghost"
-                    className="w-full justify-start text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300"
+                    className="w-full justify-start text-gray-800 dark:text-white hover:bg-green-400 dark:hover:bg-green-700 transition-all duration-300"
                   >
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </Button>
                 </Link>
               )}
-              <Link to="/settings">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300"
-                >
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
-                </Button>
-              </Link>
               <Button
                 variant="ghost"
-                className="w-full justify-start text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300"
+                className="w-full justify-start text-gray-800 dark:text-white hover:bg-red-400 dark:hover:bg-red-700 transition-all duration-300"
+                onClick={() => setSetting(true)}
+              >
+                <DeleteIcon className="mr-2 h-4 w-4" />
+                Delete Account
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-gray-800 dark:text-white hover:bg-red-300 dark:hover:bg-red-600 transition-all duration-300"
                 onClick={() => setOpen(true)}
               >
                 <LogOut className="mr-2 h-4 w-4" />
@@ -179,58 +209,88 @@ const Navbar = () => {
         </Popover>
       )}
       {open && <Logout open={open} onOpenChange={setOpen} />}
+      {setting && <DeleteAccount isOpen={setting} onOpenChange={setSetting} />}
     </div>
   );
 
   return (
-    <nav className="px-6 lg:px-24 bg-yellow-100 dark:bg-transparent border-b-2 py-6 shadow-md transition-colors duration-300">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <button onClick={toggleSidebar} className="lg:hidden">
-            <Menu className="h-6 w-6 text-gray-800 dark:text-white" />
-          </button>
-          <h1 className="text-3xl font-extrabold tracking-wide">
-            Get<span className="text-purple-500 mx-1">Hired</span>
-            <span>Easy</span>
-          </h1>
-        </div>
-        <div className="hidden lg:flex lg:items-center lg:space-x-12">
-          <NavItems />
-          <UserSection />
+    <>
+      <nav className="px-6 lg:px-24 bg-yellow-100 dark:bg-transparent border-b-2 py-3 shadow-md transition-colors duration-300">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <button onClick={toggleSidebar} className="lg:hidden">
+              <Menu className="h-6 w-6 text-gray-800 dark:text-white" />
+            </button>
+
+            <div className="flex items-center">
+              <div
+                onMouseLeave={() => setHovered(false)}
+                onMouseEnter={() => setHovered(true)}
+                className="sm:block hidden w-20 h-20 relative flex-shrink-0 mr-2"
+              >
+                <Globe3D size={80} />
+              </div>
+              <h1
+                onClick={() =>
+                  user
+                    ? user?.role === "student"
+                      ? navigate("/home")
+                      : navigate("/admin/companies")
+                    : navigate("/home")
+                }
+                className="font-bold cursor-pointer"
+              >
+                <span className="dark:text-white text-gray-800">
+                  <span className="lg:text-5xl sm:text-4xl text-3xl">G</span>
+                  <span className="lg:text-3xl sm:text-2xl text-xl">et</span>
+                </span>
+                <span className="dark:text-purple-400 text-purple-600 mx-1">
+                  <span className="lg:text-5xl sm:text-4xl text-3xl">H</span>
+                  <span className="lg:text-3xl sm:text-2xl text-xl">ired</span>
+                </span>
+                <span className="dark:text-white text-gray-800">
+                  <span className="lg:text-5xl sm:text-4xl text-3xl">E</span>
+                  <span className="lg:text-3xl sm:text-2xl text-xl">asy</span>
+                </span>
+              </h1>
+            </div>
+          </div>
+
+          <div className="hidden lg:flex items-center space-x-8">
+            <NavItems />
+            <UserSection />
+            <button
+              onClick={toggleTheme}
+              className={`rounded-full p-2 ${
+                darkMode
+                  ? "bg-[#2a2a2a] text-white hover:bg-[#3a3a3a]"
+                  : "bg-gray-100 text-[#736464] hover:bg-gray-200"
+              } transition-all duration-300`}
+            >
+              {darkMode ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </button>
+          </div>
+
           <button
             onClick={toggleTheme}
-            className={`rounded-full p-2 ${
+            className={`lg:hidden rounded-full p-2 ${
               darkMode
                 ? "bg-[#2a2a2a] text-white hover:bg-[#3a3a3a]"
                 : "bg-gray-100 text-[#736464] hover:bg-gray-200"
             } transition-all duration-300`}
           >
             {darkMode ? (
-              <Sun className="h-[1.2rem] w-[1.2rem]" />
+              <Sun className="h-5 w-5" />
             ) : (
-              <Moon className="h-[1.2rem] w-[1.2rem]" />
+              <Moon className="h-5 w-5" />
             )}
-            <span className="sr-only">Toggle theme</span>
           </button>
         </div>
-        <div className="lg:hidden">
-          <button
-            onClick={toggleTheme}
-            className={`rounded-full p-2 ${
-              darkMode
-                ? "bg-[#2a2a2a] text-white hover:bg-[#3a3a3a]"
-                : "bg-gray-100 text-[#736464] hover:bg-gray-200"
-            } transition-all duration-300`}
-          >
-            {darkMode ? (
-              <Sun className="h-[1.2rem] w-[1.2rem]" />
-            ) : (
-              <Moon className="h-[1.2rem] w-[1.2rem]" />
-            )}
-            <span className="sr-only">Toggle theme</span>
-          </button>
-        </div>
-      </div>
+      </nav>
 
       <AnimatePresence>
         {isSidebarOpen && (
@@ -239,13 +299,13 @@ const Navbar = () => {
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed inset-y-0 left-0 z-50 w-5/12 bg-white dark:bg-gray-900 shadow-lg lg:hidden"
+            className="fixed inset-y-0 left-0 z-[60] w-64 bg-white dark:bg-gray-900 shadow-lg lg:hidden overflow-y-auto"
           >
             <div className="p-4 h-full flex flex-col">
               <button onClick={toggleSidebar} className="self-end mb-4">
                 <X className="h-6 w-6 text-gray-800 dark:text-white" />
               </button>
-              <div className="flex-grow overflow-y-auto">
+              <div className="flex-grow">
                 <NavItems />
                 <UserSection />
               </div>
@@ -261,12 +321,12 @@ const Navbar = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            className="fixed inset-0 bg-black bg-opacity-50 z-[55] lg:hidden"
             onClick={toggleSidebar}
           />
         )}
       </AnimatePresence>
-    </nav>
+    </>
   );
 };
 

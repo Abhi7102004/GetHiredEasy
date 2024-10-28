@@ -10,12 +10,12 @@ const transporter = createTransport({
   },
 });
 
-export const sendEmail = (to, subject, text) => {
+export const sendEmail = (to, subject, html) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to,
     subject,
-    text,
+    html,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {

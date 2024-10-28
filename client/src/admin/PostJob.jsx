@@ -21,6 +21,7 @@ import {
   Award,
   Building,
   Loader2,
+  Calendar,
 } from "lucide-react";
 import { useLocationData } from "@/hooks/useLocationData";
 import { toast } from "sonner";
@@ -48,7 +49,7 @@ const FormInput = ({ label, name, value, onChange, icon: Icon, ...props }) => {
         name={name}
         value={value}
         onChange={onChange}
-        className="mt-1"
+        className="mt-1 bg-white/80 dark:bg-gray-950/80"
         {...props}
       />
     </motion.div>
@@ -69,7 +70,7 @@ const FormSelect = ({ label, name, value, onChange, icon: Icon, options }) => {
         onValueChange={(value) => onChange({ target: { name, value } })}
         value={value}
       >
-        <SelectTrigger className="mt-1">
+        <SelectTrigger className="mt-1 bg-white/80 dark:bg-gray-950/80 ">
           <SelectValue placeholder={`Select ${label.toLowerCase()}`} />
         </SelectTrigger>
         <SelectContent>
@@ -94,6 +95,7 @@ const PostJob = () => {
     experience: "",
     salary: "",
     position: 0,
+    expiryDate: "",
     jobType: "",
     location: "",
     companyId: "",
@@ -157,7 +159,6 @@ const PostJob = () => {
       ...formData,
       location: fullLocation,
     };
-    console.log(finalFormData);
     try {
       const response = await apiClient.post(POST_JOB_ROUTE, formData, {
         headers: {
@@ -177,14 +178,15 @@ const PostJob = () => {
   };
 
   const jobTypeOptions = [
-    { value: "full-time", label: "Full-time" },
+    { value: "internship", label: "Internship" },
     { value: "part-time", label: "Part-time" },
-    { value: "contract", label: "Contract" },
-    { value: "freelance", label: "Freelance" },
+    { value: "full-time", label: "Full-time" },
+    { value: "contract", label: "Contract Work" },
+    { value: "freelance", label: "Freelance Work" },
   ];
 
   return (
-    <Card className="w-full max-w-6xl mx-auto my-8 bg-white dark:bg-gray-800 shadow-lg">
+    <Card className="w-full max-w-6xl mx-auto my-8 bg-white/40 dark:bg-gray-950/40 shadow-lg">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center text-gray-800 dark:text-gray-100">
           Post a New Job
@@ -251,7 +253,7 @@ const PostJob = () => {
               value={formData.description}
               onChange={handleChange}
               placeholder="Describe the role and responsibilities"
-              className="mt-1"
+              className="mt-1 bg-white/80 dark:bg-gray-950/80 "
             />
           </motion.div>
 
@@ -273,28 +275,39 @@ const PostJob = () => {
               value={formData.requirements}
               onChange={handleChange}
               placeholder="List the key requirements for this position"
-              className="mt-1"
+              className="mt-1 bg-white/80 dark:bg-gray-950/80 "
             />
           </motion.div>
 
-          <FormInput
-            label="Salary Range"
-            name="salary"
-            value={formData.salary}
-            onChange={handleChange}
-            icon={DollarSign}
-            placeholder="e.g. $80,000 - $120,000"
-          />
+          <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <FormInput
+              label="Salary Range"
+              name="salary"
+              value={formData.salary}
+              onChange={handleChange}
+              icon={DollarSign}
+              placeholder="e.g. $80,000 - $120,000"
+            />
+            <FormInput
+              label="Expiration Date(mm/dd/yyyy)"
+              name="expiryDate"
+              value={formData.expiryDate}
+              onChange={handleChange}
+              icon={Calendar}
+              type="date"
+              placeholder="Enter the expiration date"
+            />
 
-          <FormInput
-            label="Position"
-            name="position"
-            value={formData.position}
-            onChange={handleChange}
-            icon={Briefcase}
-            type="number"
-            placeholder="Enter position number"
-          />
+            <FormInput
+              label="Position"
+              name="position"
+              value={formData.position}
+              onChange={handleChange}
+              icon={Briefcase}
+              type="number"
+              placeholder="Enter position number"
+            />
+          </motion.div>
 
           <FormInput
             label="Location"

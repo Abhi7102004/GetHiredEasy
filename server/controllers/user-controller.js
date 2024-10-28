@@ -5,6 +5,8 @@ import getDataUri from "../utils/dataURI.js";
 import cloudinary from "../utils/cloudinary.js";
 import { generateOTP } from "../utils/constants/generateOtp.js";
 import { sendEmail } from "../config/nodemailer.js";
+import hashPassword from "../utils/constants/hashPassword.js";
+import getLoginOTPTemplate from "../email-templates/getLoginOTPTemplate.js";
 
 export const signup = async (req, res) => {
   try {
@@ -27,9 +29,7 @@ export const signup = async (req, res) => {
         .json({ message: "Email already in use.", success: false });
     }
 
-    const saltRounds = 10;
-    const salt = await bcrypt.genSalt(saltRounds);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await hashPassword(password);
     const newUser = await UserModel.create({
       fullName,
       email,
@@ -89,7 +89,6 @@ export const login = async (req, res) => {
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    console.log(isPasswordValid);
     if (!isPasswordValid) {
       return res
         .status(400)
@@ -107,6 +106,10 @@ export const login = async (req, res) => {
       sameSite: "strict",
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
+    try {
+    } catch (error) {
+      console.log(error.message);
+    }
     res.status(200).json({
       message: `Welcome back ${user.fullName}`,
       user: {
@@ -157,20 +160,12 @@ export const loginByOtp = async (req, res) => {
     user.otpExpires = otpExpires;
     await user.save();
 
-    sendEmail(
-      email,
-      "Your OTP Code for GetHiredEasy Login",
-      `Dear user,
-      
-      Your one-time password (OTP) to log in to your GetHiredEasy account is: **${otp}**
-      
-      This OTP is valid for 5 minutes. For your security, please do not share this code with anyone.
-      
-      If you did not request this OTP, please disregard this email.
-      
-      Best regards,
-      The GetHiredEasy Team`
-    );
+    try {
+      const html = getLoginOTPTemplate(user?.fullName, otp);
+      sendEmail(email, "Your OTP Code for GetHiredEasy Login", html);
+    } catch (error) {
+      console.log(error.message);
+    }
 
     return res.status(200).json({
       message: "OTP sent successfully",
@@ -310,7 +305,7 @@ export const updateProfile = async (req, res) => {
     user.profile.bio = bio;
     if (resume) user.profile.resumeOriginalName = resume.originalname;
     if (resumeUrl) user.profile.resume = resumeUrl;
-    if (profileImageUrl) user.profile.profileImageUrl = profileImageUrl;
+    if (profileImageUrl) user.profile.profilePicture = profileImageUrl;
     await user.save();
     return res.status(200).json({
       message: "Profile updated successfully.",
@@ -324,13 +319,82 @@ export const updateProfile = async (req, res) => {
       },
       success: true,
     });
-    // res.send('hello')
   } catch (error) {
     console.error("Error updating profile:", error);
     return res.status(500).json({
       message: "Server error. Please try again later.",
       error: error.message,
       success: false,
+    });
+  }
+};
+export const changePassword = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+    if (!email || !newPassword) {
+      return res.status(400).json({
+        message: "Email and new password are required.",
+        success: false,
+      });
+    }
+    const hashedPassword = await hashPassword(newPassword);
+    const user = await UserModel.findOneAndUpdate(
+      { email },
+      { password: hashedPassword },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found.",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Password updated successfully.",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    return res.status(500).json({
+      message: "Server error. Please try again later.",
+      error: error.message,
+      success: false,
+    });
+  }
+};
+export const DeleteAccount = async (req, res) => {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "You are not authenticated",
+      });
+    }
+    res.cookie("jwtToken", "", {
+      httpOnly: true,
+      sameSite: "strict",
+      maxAge: 0,
+    });
+    const user = await UserModel.findByIdAndDelete(userId);
+    if (!user) {
+      if (!userId) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Account deleted Successfully",
+    });
+  } catch (error) {
+    return res.status(200).json({
+      success: false,
+      message: "Internal Server Error",
     });
   }
 };

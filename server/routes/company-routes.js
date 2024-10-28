@@ -5,6 +5,7 @@ import {
   getCompany,
   getCompanyById,
   RegisterCompany,
+  UnRegisterCompanyById,
   updateCompanyById,
 } from "../controllers/company-controller.js";
 import { singleUpload } from "../middleware/multer.js";
@@ -13,5 +14,5 @@ Router.post("/register", isAuthenticated, RegisterCompany);
 Router.get("/get", isAuthenticated, getCompany);
 Router.get("/get/:id", isAuthenticated, getCompanyById);
 Router.put("/update/:id", isAuthenticated,singleUpload,updateCompanyById);
-
+Router.delete("/unregister/:id",isAuthenticated,UnRegisterCompanyById)
 export default Router;

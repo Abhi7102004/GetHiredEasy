@@ -19,6 +19,18 @@ const CompanySchema = new mongoose.Schema(
     logo: {
       type: String,
     },
+    email:{
+      type:String,  
+    },
+    contact:{
+      type:Number,
+    },
+    twitter:{
+      type:String,  
+    },
+    linkedIn:{
+      type:String, 
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

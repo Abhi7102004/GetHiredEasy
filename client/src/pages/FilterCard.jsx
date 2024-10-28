@@ -12,16 +12,16 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useLocationData } from "@/hooks/useLocationData";
-import { toast } from "sonner";
-import { apiClient } from "@/lib/apiClient";
-import { FILTER_ROUTE } from "@/utils/constants";
+import { Filter, MapPin, Briefcase, User, Banknote } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getAllJobs, setAllSearchedJobs } from "@/store/slices/jobSlice";
+import { setAllSearchedJobs } from "@/store/slices/jobSlice";
+import { apiClient } from "@/lib/apiClient";
+import { FILTER_ROUTE } from "@/utils/constants";
 
 const FilterCard = () => {
-  const dispatch=useDispatch();
-  const navigate=useNavigate();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const {
     countries,
     states,
@@ -66,14 +66,15 @@ const FilterCard = () => {
       return { ...prev, titleList: updatedTitleList };
     });
   };
-  const handleSubmit = async (req, res) => {
+
+  const handleSubmit = async () => {
     try {
       const response = await apiClient.post(FILTER_ROUTE, filters, {
         withCredentials: true,
       });
-      if(response.data.success){
+      if (response.data.success) {
         dispatch(setAllSearchedJobs(response.data.jobs));
-        navigate('/browse')
+        navigate('/browse');
       }
     } catch (error) {
       console.log(error);
@@ -86,36 +87,38 @@ const FilterCard = () => {
     "Fullstack Developer",
     "UI/UX Designer",
   ];
- 
+
   return (
-    <Card className="shadow-lg border border-gray-200 dark:border-gray-700 rounded-xl">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-3xl text-center font-bold">
+    <Card className="bg-gray-100 dark:bg-gray-950/50 shadow-lg border border-gray-200 dark:border-gray-700 rounded-xl transition-all duration-300 hover:shadow-xl">
+      <CardHeader className="pb-4text-white rounded-t-xl">
+        <CardTitle className="text-3xl text-center font-bold flex items-center justify-center gap-2">
+          <Filter className="w-6 h-6" />
           Filter Jobs
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Location */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Location</Label>
+      <CardContent className="space-y-6 p-6">
+        {/* Location Section */}
+        <div className="space-y-2 transition-all duration-300 hover:transform hover:translate-x-1">
+          <Label className="text-sm font-medium flex items-center gap-2">
+            <MapPin className="w-4 h-4" />
+            Location
+          </Label>
           <Select onValueChange={handleCountryChange} value={selectedCountry}>
-            <SelectTrigger className="bg-white dark:bg-gray-800">
+            <SelectTrigger className="bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors duration-300">
               <SelectValue placeholder="Select Country" />
             </SelectTrigger>
             <SelectContent>
               {countries.map((country) => (
-                <SelectItem
-                  key={country.country_name}
-                  value={country.country_name}
-                >
+                <SelectItem key={country.country_name} value={country.country_name}>
                   {country.country_name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+
           {selectedCountry && (
             <Select onValueChange={handleStateChange} value={selectedState}>
-              <SelectTrigger className="bg-white dark:bg-gray-800">
+              <SelectTrigger className="bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors duration-300">
                 <SelectValue placeholder="Select State" />
               </SelectTrigger>
               <SelectContent>
@@ -127,9 +130,10 @@ const FilterCard = () => {
               </SelectContent>
             </Select>
           )}
+
           {selectedState && (
             <Select onValueChange={handleCityChange} value={selectedCity}>
-              <SelectTrigger className="bg-white dark:bg-gray-800">
+              <SelectTrigger className="bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors duration-300">
                 <SelectValue placeholder="Select City" />
               </SelectTrigger>
               <SelectContent>
@@ -143,14 +147,17 @@ const FilterCard = () => {
           )}
         </div>
 
-        {/* Job Type */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Job Type</Label>
+        {/* Job Type Section */}
+        <div className="space-y-2 transition-all duration-300 hover:transform hover:translate-x-1">
+          <Label className="text-sm font-medium flex items-center gap-2">
+            <Briefcase className="w-4 h-4" />
+            Job Type
+          </Label>
           <Select
             onValueChange={(value) => handleFilterChange("jobType", value)}
             value={filters.jobType}
           >
-            <SelectTrigger className="bg-white dark:bg-gray-800">
+            <SelectTrigger className="bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors duration-300">
               <SelectValue placeholder="Select Job Type" />
             </SelectTrigger>
             <SelectContent>
@@ -162,51 +169,57 @@ const FilterCard = () => {
           </Select>
         </div>
 
-        {/* Job Title */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Job Title</Label>
-          <div className="space-y-2">
+        {/* Job Title Section */}
+        <div className="space-y-2 transition-all duration-300 hover:transform hover:translate-x-1">
+          <Label className="text-sm font-medium flex items-center gap-2">
+            <User className="w-4 h-4" />
+            Job Title
+          </Label>
+          <div className="space-y-2 bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
             {jobTitles.map((fullTitle) => {
               const title = fullTitle.split(" ")[0].toLowerCase();
               return (
-                <div key={fullTitle} className="flex items-center space-x-2">
+                <div key={fullTitle} className="flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors duration-200">
                   <Checkbox
                     id={title}
                     checked={filters.titleList.includes(title)}
                     onCheckedChange={() => handleTitleChange(fullTitle)}
                   />
-                  <Label htmlFor={title}>
-                    {fullTitle}{" "}
+                  <Label htmlFor={title} className="cursor-pointer">
+                    {fullTitle}
                   </Label>
                 </div>
               );
             })}
           </div>
         </div>
-        {/* Experience Level */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">
+
+        {/* Experience Level Section */}
+        <div className="space-y-2 transition-all duration-300 hover:transform hover:translate-x-1">
+          <Label className="text-sm font-medium flex items-center gap-2">
+            <User className="w-4 h-4" />
             Experience Level (Years)
           </Label>
           <Input
             type="text"
             placeholder="e.g., 2-5 years"
             value={filters.experienceLevel}
-            onChange={(e) =>
-              handleFilterChange("experienceLevel", e.target.value)
-            }
-            className="bg-white dark:bg-gray-800"
+            onChange={(e) => handleFilterChange("experienceLevel", e.target.value)}
+            className="bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors duration-300"
           />
         </div>
 
-        {/* Salary Range */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Salary Range (₹)</Label>
+        {/* Salary Range Section */}
+        <div className="space-y-2 transition-all duration-300 hover:transform hover:translate-x-1">
+          <Label className="text-sm font-medium flex items-center gap-2">
+            <Banknote className="w-4 h-4" />
+            Salary Range (₹)
+          </Label>
           <Select
             onValueChange={(value) => handleFilterChange("salary", value)}
             value={filters.salary}
           >
-            <SelectTrigger className="bg-white dark:bg-gray-800">
+            <SelectTrigger className="bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors duration-300">
               <SelectValue placeholder="Select Salary Range" />
             </SelectTrigger>
             <SelectContent>
@@ -221,8 +234,9 @@ const FilterCard = () => {
         {/* Submit Button */}
         <Button
           onClick={handleSubmit}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-2"
         >
+          <Filter className="w-5 h-5" />
           Apply Filters
         </Button>
       </CardContent>

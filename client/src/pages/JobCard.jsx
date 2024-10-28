@@ -1,32 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Bookmark, IndianRupee, ChevronDown, ChevronUp } from "lucide-react";
+import { Bookmark, Briefcase, IndianRupee, MapPin, Users } from "lucide-react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { DUMMY_PROFILE_URL } from "@/utils/constants";
 
 const JobCard = ({ job }) => {
-  
-  const cardVariants = {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
-  };
-  
   const navigate = useNavigate();
-  
+
   const formatDateDifference = (createdAt) => {
     if (!createdAt) return "";
-
     const now = moment();
     const jobCreatedAt = moment(createdAt);
-
     const months = now.diff(jobCreatedAt, "months");
     jobCreatedAt.add(months, "months");
     const days = now.diff(jobCreatedAt, "days");
-
     return `${months > 0 ? `${months} Month${months > 1 ? "s" : ""} ` : ""}${
       days >= 0 ? `${days} Day${days > 1 ? "s" : ""} ` : ""
     }Ago`;
@@ -34,86 +25,91 @@ const JobCard = ({ job }) => {
 
   return (
     <motion.div
-      className="p-5 rounded-md shadow-xl bg-white dark:bg-gray-950/25 border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-      variants={cardVariants}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      viewport={{ once: true, amount: 0.3 }}
+      className="relative overflow-hidden p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-gray-100 dark:bg-gray-950/40 shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out group w-full"
     >
-      <div className="flex items-center justify-between">
-        <p className="text-gray-500 dark:text-gray-400 text-sm">
-          {job ? formatDateDifference(job?.createdAt) : ""}
-        </p>
-        <Button 
-          variant="outline" 
-          className="rounded-full hover:bg-gray-100 dark:hover:bg-gray-800" 
-          size="icon"
-        >
-          <Bookmark className="w-4 h-4" />
-        </Button>
-      </div>
-      
-      <div className="flex items-center gap-3 my-3">
-        <Avatar className="w-12 h-12 border-2 border-gray-100 dark:border-gray-700">
-          <AvatarImage src={job?.company?.logo || DUMMY_PROFILE_URL} />
-        </Avatar>
-        <div>
-          <h3 className="text-black line-clamp-1 dark:text-white font-semibold">
-            {job?.company?.name}
-          </h3>
-          <p className="text-gray-600 line-clamp-1 dark:text-gray-400 text-sm">
-            {job?.location}
-          </p>
-        </div>
-      </div>
+      {/* Background gradient effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out"></div>
 
-      <div className="space-y-2">
-        <h1 className="font-bold text-lg line-clamp-1 text-black dark:text-white">
-          {job?.title}
-        </h1>
-        <div className="relative">
-          <p className={`text-sm text-gray-600 line-clamp-1 dark:text-gray-400`}>
+      {/* Content container */}
+      <div className="relative z-10">
+        {/* Header with timestamp and bookmark */}
+        <div className="flex justify-between items-center mb-3 sm:mb-4">
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+            {formatDateDifference(job?.createdAt)}
+          </p>
+          <Button
+            variant="outline"
+            className="h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+            size="icon"
+          >
+            <Bookmark className="w-3 h-3 sm:w-4 sm:h-4" />
+          </Button>
+        </div>
+
+        {/* Company info and location */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-4 sm:mb-6">
+          <Avatar className="w-10 h-10 sm:w-12 sm:h-12 border-2 border-gray-200 dark:border-gray-600">
+            <AvatarImage src={job?.company?.logo || DUMMY_PROFILE_URL} />
+          </Avatar>
+          <div className="flex-1">
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+              {job?.company?.name}
+            </h1>
+            <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+              <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+              <span className="truncate">{job?.location}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Job details */}
+        <div className="mb-4 sm:mb-6">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+            {job?.title}
+          </h2>
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 line-clamp-2 sm:line-clamp-1 group-hover:text-gray-800 dark:group-hover:text-gray-300 transition-colors duration-300">
             {job?.description}
           </p>
         </div>
+
+        {/* Tags and badges */}
+        <div className="flex flex-wrap items-center gap-1.5 mb-4 sm:mb-6">
+          <div className="flex items-center px-2 sm:px-3 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 group-hover:bg-blue-100 dark:group-hover:bg-blue-800/50 transition-colors duration-300">
+            <Users className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+            <span className="text-xs sm:text-sm">{job?.position} Positions</span>
+          </div>
+          <div className="flex items-center px-2 sm:px-3 py-1 rounded-full bg-purple-50 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 group-hover:bg-purple-100 dark:group-hover:bg-purple-800/50 transition-colors duration-300">
+            <Briefcase className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+            <span className="text-xs sm:text-sm">{job?.jobType}</span>
+          </div>
+          <div className="flex items-center px-2 sm:px-3 py-1 rounded-full bg-purple-50 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 group-hover:bg-purple-100 dark:group-hover:bg-purple-800/50 transition-colors duration-300">
+            <IndianRupee className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="text-xs sm:text-sm">{job?.salary}</span>
+          </div>
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2 sm:gap-3">
+          <Button
+            onClick={() => navigate(`/description/${job?._id}`)}
+            variant="outline"
+            className="text-sm h-9 sm:h-10 text-gray-800 dark:text-white border-gray-800 dark:border-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex-1 xs:flex-none"
+          >
+            View Details
+          </Button>
+          <Button className="text-sm h-9 sm:h-10 bg-[#F72907] dark:bg-[#F53982] text-white hover:opacity-90 transition-opacity flex-1 xs:flex-none">
+            Save For Later
+          </Button>
+        </div>
       </div>
 
-      <div className="flex flex-wrap items-center mt-4 gap-2">
-        <Badge
-          variant="ghost"
-          className="px-2 py-1 font-medium text-blue-800 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/30"
-        >
-          {job?.position} Positions
-        </Badge>
-        <Badge 
-          className="text-[#F53982] px-2 py-1 font-medium bg-pink-50 dark:bg-pink-950/30" 
-          variant="ghost"
-        >
-          {job?.jobType}
-        </Badge>
-        <Badge
-          variant="ghost"
-          className="px-2 py-1 font-medium text-violet-800 dark:text-violet-300 bg-violet-50 dark:bg-violet-950/30 flex items-center gap-1"
-        >
-          <IndianRupee className="w-3 h-3" />
-          <span>{job?.salary}</span>
-        </Badge>
-      </div>
-
-      <div className="flex items-center gap-3 mt-4">
-        <Button
-          onClick={() => navigate(`/description/${job?._id}`)}
-          variant="outline"
-          className="text-black dark:text-white border-black dark:border-white hover:bg-gray-100 dark:hover:bg-gray-800"
-        >
-          View Details
-        </Button>
-        <Button 
-          className="bg-[#F72907] dark:bg-[#F53982] text-white hover:opacity-90 transition-opacity"
-        >
-          Save For Later
-        </Button>
-      </div>
+      {/* Hover effect border */}
+      <div className="absolute inset-0 border-2 border-transparent group-hover:border-blue-500 dark:group-hover:border-blue-400 rounded-xl sm:rounded-2xl transition-colors duration-300 pointer-events-none"></div>
     </motion.div>
   );
 };

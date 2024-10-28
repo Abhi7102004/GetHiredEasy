@@ -3,8 +3,6 @@ import {
   RouterProvider,
   createBrowserRouter,
   Outlet,
-  useNavigate,
-  useLocation,
   Navigate,
 } from "react-router-dom";
 import Navbar from "./pages/Navbar";
@@ -20,19 +18,20 @@ import CreateNewJob from "./admin/CreateNewCompany";
 import CompanySetup from "./admin/CompanySetup";
 import CompanyDetails from "./admin/CompanyDetails";
 import AdminJobs from "./admin/AdminJobs";
-import Settings from "./pages/Settings";
 import PostJob from "./admin/PostJob";
 import Applicants from "./admin/Applicants";
 import { useSelector } from "react-redux";
+import Footer from "./pages/Footer";
 // import ErrorPage from "./pages/ErrorPage";
 
 const Layout = () => {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div className="min-h-screen text-gray-900 dark:text-white">
       <Navbar />
-      <div className="px-6 lg:px-24">
+      <div className="px-6 lg:px-20"> 
         <Outlet />
       </div>
+      {/* <Footer/> */}
     </div>
   );
 };
@@ -98,10 +97,6 @@ const router = createBrowserRouter([
             <Profile />
           </RestrictedUserRoute>
         ),
-      },
-      {
-        path: "/settings",
-        element: <Settings />,
       },
       {
         path: "/description/:jobId",

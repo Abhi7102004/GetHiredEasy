@@ -11,10 +11,10 @@ const Footer = () => {
       opacity: 1, 
       y: 0,
       transition: {
-        duration: 0.8,
+        duration: 0.2,
         ease: [0.6, -0.05, 0.01, 0.99], 
         when: "beforeChildren",
-        staggerChildren: 0.1
+        staggerChildren: 0.4
       }
     }
   };
@@ -40,7 +40,7 @@ const Footer = () => {
       variants={containerVariants}
     >
         <hr/>
-      <div className="container mx-auto mt-10 px-4">
+      <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <motion.div variants={childVariants} className="mb-8 md:mb-0">
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Job Hunt</h2>

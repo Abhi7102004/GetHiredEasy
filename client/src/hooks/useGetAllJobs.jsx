@@ -15,7 +15,6 @@ const useGetAllJobs = () => {
         if (searchedQuery.length > 0) {
           url += `?keyword=${searchedQuery}`;
         }
-        console.log(url)
         const response = await apiClient.get(url, {
           withCredentials: true,
         });

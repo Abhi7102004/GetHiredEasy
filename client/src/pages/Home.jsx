@@ -32,9 +32,9 @@ const Home = () => {
   return (
     <div>
       <AnimatedSection component={HeroSection} delay={0.1} />
-      <AnimatedSection component={CategoryCarousel} delay={0.9} />
-      <AnimatedSection component={LatestJob} delay={1.2} />
-      <Footer component={Footer} delay={1.5} />
+      <AnimatedSection component={CategoryCarousel} delay={0.1} />
+      <AnimatedSection component={LatestJob} delay={0.1} />
+      <Footer/>
     </div>
   );
 };

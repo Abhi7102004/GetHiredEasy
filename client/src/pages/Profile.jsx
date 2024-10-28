@@ -52,7 +52,7 @@ const ProfileCard = ({ setOpen }) => {
       initial="hidden"
       animate={isVisible ? "visible" : "hidden"}
     >
-      <Card className="w-full mx-auto dark:bg-gray-950/25 shadow-lg transition-all duration-500 hover:shadow-blue-200 dark:hover:shadow-blue-900 rounded-2xl overflow-hidden">
+      <Card className="w-full mx-auto bg-white/30 dark:bg-gray-950/30 shadow-lg transition-all duration-500 hover:shadow-blue-200 dark:hover:shadow-blue-900 rounded-2xl overflow-hidden">
         <CardHeader className="pb-2">
           <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-8">
             <Avatar className="h-40 w-40 border-4 border-blue-500 dark:border-blue-400 shadow-xl">
@@ -135,7 +135,7 @@ const ProfileCard = ({ setOpen }) => {
 };
 
 const InfoItem = ({ icon: Icon, label, value }) => (
-  <div className="flex items-center space-x-4 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+  <div className="flex items-center space-x-4 text-gray-700 dark:text-gray-300 bg-white/30 dark:bg-gray-800 p-4 rounded-lg shadow-md">
     <Icon className="h-6 w-6 text-blue-500 dark:text-blue-400" />
     <div>
       <span className="font-medium text-gray-900 dark:text-gray-100">
@@ -202,7 +202,7 @@ const AppliedJobsTable = () => {
   };
 
   return (
-    <Card className="mt-12 bg-white dark:bg-gray-950/25 shadow-lg transition-all duration-300 hover:shadow-blue-200 dark:hover:shadow-blue-900 rounded-2xl overflow-hidden">
+    <Card className="mt-12 bg-white/30 dark:bg-gray-950/25 shadow-lg transition-all duration-300 hover:shadow-blue-200 dark:hover:shadow-blue-900 rounded-2xl overflow-hidden">
       <CardHeader>
         <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
           Applied Jobs
@@ -220,11 +220,11 @@ const AppliedJobsTable = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="bg-white/50 dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
               {allAppliedJobs?.map((appliedJob, index) => (
                 <React.Fragment key={index}>
                   <motion.tr 
-                    className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200"
+                    className="hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors duration-200"
                     variants={tableRowVariants}
                     initial="hidden"
                     animate="visible"

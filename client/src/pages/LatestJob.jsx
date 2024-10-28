@@ -11,13 +11,13 @@ const LatestJob = () => {
   const { jobs } = useSelector((store) => store.job);
   if(!jobs) return <div>Loading...</div>
   return (
-    <div className="my-20 mx-auto w-full">
+    <div className="mt-20 mb-10 mx-auto w-full">
       <h1 className="text-4xl font-bold dark:text-white">
         <span className="text-purple-500 dark:text-purple-400">Latest</span> &{" "}
         <span className="text-purple-500 dark:text-purple-400">Top </span>Job
         Openings
       </h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 my-5">
         {jobs.slice(0, 6).map((job, index) => (
           <motion.div onClick={()=>navigate(`/description/${job._id}`)}
             key={index}

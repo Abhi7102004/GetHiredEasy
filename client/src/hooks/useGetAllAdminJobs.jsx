@@ -12,7 +12,6 @@ const useGetAllAdminJobs = () => {
         const response = await apiClient.get(GET_ALL_ADMIN_JOB_ROUTE, {
           withCredentials: true,
         });
-        console.log(response)
         if (response.data.success) {
           dispatch(setAllAdminJobs(response.data.jobs));
         }

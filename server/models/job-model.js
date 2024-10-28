@@ -41,6 +41,10 @@ const JobSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    expiryDate:{
+      type:Date,
+      required:false,
+    },
     applications: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Application",

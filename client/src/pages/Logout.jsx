@@ -82,6 +82,7 @@ const Logout = ({ open, onOpenChange }) => {
                 Logout
               </motion.button>
             </div>
+            
           </motion.div>
         </motion.div>
       )}

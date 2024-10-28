@@ -9,6 +9,7 @@ export const GET_ALL_JOB_ROUTE=`${JOB_ROUTE}/get`
 export const GET_SINGLE_JOB_ROUTE=`${JOB_ROUTE}/get`
 export const APPLICATION_ROUTE='/api/v1/application'
 export const APPLY_JOB_ROUTE=`${APPLICATION_ROUTE}/apply`
+export const WITHDRAW_JOB_ROUTE=`${APPLICATION_ROUTE}/withdraw`
 export const COMPANY_ROUTE='/api/v1/company'
 export const REGISTER_COMPANY_ROUTE=`${COMPANY_ROUTE}/register`
 export const UPDATE_COMPANY_ROUTE=`${COMPANY_ROUTE}/update`
@@ -21,4 +22,7 @@ export const GET_APPLIED_JOB_ROUTE=`${APPLICATION_ROUTE}/get`
 export const REQUEST_OTP_ROUTE=`${USER_ROUTE}/login-by-otp`
 export const VERIFICATION_OTP_ROUTE=`${USER_ROUTE}/verify-otp`
 export const FILTER_ROUTE=`${JOB_ROUTE}/filter`
+export const DELETE_COMPANY_BY_ID=`${COMPANY_ROUTE}/unregister`
+export const CHANGE_PASSWORD_ROUTE=`${USER_ROUTE}/change-password`
+export const HANDLE_DELETE_ACCOUNT_ROUTE=`${USER_ROUTE}/delete`
 export const DUMMY_PROFILE_URL="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQADjfoADAlJPrsl_hiiOMeE-FBor-i6hEAVg&s"

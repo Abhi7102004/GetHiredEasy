@@ -1,12 +1,26 @@
+import React from "react";
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FilterCard from "./FilterCard";
 import JobCard from "./JobCard";
-import { useSelector } from "react-redux";
 import useGetAllJobs from "@/hooks/useGetAllJobs";
 
 const Jobs = () => {
   useGetAllJobs();
-  const {jobs}=useSelector(store=>store.job);
+  const { jobs } = useSelector((store) => store.job);
+  const { user } = useSelector((store) => store.auth);
+
+  const appliedJobs = jobs.filter((job) =>
+    job.applications?.some((application) => application.applicant === user?._id)
+  );
+
+  const availableJobs = jobs.filter(
+    (job) =>
+      !job.applications?.some(
+        (application) => application.applicant === user?._id
+      )
+  );
 
   const cardVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -20,12 +34,40 @@ const Jobs = () => {
     }),
   };
 
+  const JobsGrid = ({ jobsList }) => (
+    <div className="w-full">
+      {jobsList.length === 0 ? (
+        <motion.p
+          className="text-xl text-center text-gray-500 dark:text-gray-400 mt-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          No jobs found
+        </motion.p>
+      ) : (
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6"
+          initial="hidden"
+          animate="visible"
+          variants={cardVariants}
+        >
+          {jobsList.map((job, index) => (
+            <motion.div key={job._id} custom={index} variants={cardVariants}>
+              <JobCard job={job} />
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
+    </div>
+  );
+
   return (
     <div className="w-full mx-auto py-10">
-      <div className="grid grid-cols-1 xl:grid-cols-4 xl:gap-y-0 gap-y-10 xl:gap-x-10 gap-x-0 ">
+      <div className="w-full grid grid-cols-1 xl:grid-cols-4 xl:gap-y-0 gap-y-10 xl:gap-x-10 gap-x-0">
         {/* Filter section */}
         <motion.div
-          className="xl:col-span-1"
+          className="md:col-span-1"
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
@@ -33,31 +75,34 @@ const Jobs = () => {
           <FilterCard />
         </motion.div>
 
-        {/* Jobs section */}
+        {/* Jobs section with tabs */}
         <div className="lg:col-span-3">
-          {jobs.length === 0 ? (
-            <motion.p
-              className="text-xl text-center text-gray-300"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              No jobs found
-            </motion.p>
-          ) : (
-            <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6"
-              initial="hidden"
-              animate="visible"
-              variants={cardVariants}
-            >
-              {jobs.map((job, index) => (
-                <motion.div key={index} custom={index} variants={cardVariants}>
-                  <JobCard job={job} />
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
+          <Tabs defaultValue="available" className="w-full">
+            <div className="mb-6">
+              <TabsList className="inline-flex h-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 p-1">
+                <TabsTrigger
+                  value="available"
+                  className="data-[state=active]:bg-blue-500 data-[state=active]:text-white rounded-md px-6 py-2 text-sm font-medium transition-all"
+                >
+                  Available Jobs ({availableJobs.length})
+                </TabsTrigger>
+                <TabsTrigger
+                  value="applied"
+                  className="data-[state=active]:bg-green-500 data-[state=active]:text-white rounded-md px-6 py-2 text-sm font-medium transition-all"
+                >
+                  Applied Jobs ({appliedJobs.length})
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <TabsContent value="available" className="mt-0">
+              <JobsGrid jobsList={availableJobs} />
+            </TabsContent>
+
+            <TabsContent value="applied" className="mt-0">
+              <JobsGrid jobsList={appliedJobs} />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
