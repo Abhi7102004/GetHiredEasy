@@ -11,13 +11,5 @@
       "use": "@vercel/static"
     }
   ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/",
-      "headers": {
-        "Access-Control-Allow-Origin": "*"
-      }
-    }
-  ]
+  "routes": [{ "src": "/(.*)", "dest": "/" }]
 }
