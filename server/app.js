@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const corsOption = {
-  origin: "http://localhost:5173",
+  origin: "https://get-hired-easy-actx.vercel.app/",
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
 };
