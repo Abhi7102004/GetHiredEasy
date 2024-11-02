@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const corsOption = {
-  origin: "https://localhost:5173",
+  origin: "https://gethiredeasy-v1.onrender.com",
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
 };
