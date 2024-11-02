@@ -49,6 +49,7 @@ export const signup = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "none",
+      path:"/",
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
     const user = {
@@ -59,7 +60,6 @@ export const signup = async (req, res) => {
       role: newUser.role,
       profile: newUser.profile,
     };
-    // console.log(user);
     res.status(201).json({
       message: "User created successfully.",
       user,

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Bookmark, Briefcase, IndianRupee, MapPin, Users } from "lucide-react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -22,19 +21,13 @@ const JobCard = ({ job }) => {
       days >= 0 ? `${days} Day${days > 1 ? "s" : ""} ` : ""
     }Ago`;
   };
+  
   const handleBookmarkToggle = () => {
     setIsBookmarked(prev => !prev);
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      viewport={{ once: true, amount: 0.3 }}
-      className="relative overflow-hidden p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-gray-100 dark:bg-gray-950/40 shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out group w-full"
-    >
+    <div className="relative overflow-hidden p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-gray-100 dark:bg-gray-950/40 shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out group w-full">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out"></div>
 
       <div className="relative z-10">
@@ -111,7 +104,7 @@ const JobCard = ({ job }) => {
       </div>
 
       <div className="absolute inset-0 border-2 border-transparent group-hover:border-blue-500 dark:group-hover:border-blue-400 rounded-xl sm:rounded-2xl transition-colors duration-300 pointer-events-none"></div>
-    </motion.div>
+    </div>
   );
 };
 

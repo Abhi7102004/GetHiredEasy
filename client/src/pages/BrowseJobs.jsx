@@ -62,7 +62,7 @@ const JobsGrid = ({ jobsList }) => {
 };
 
 const BrowseJobs = () => {
-  const { isLoading, error } = useGetAllJobs();
+  useGetAllJobs(); // Just call the hook without destructuring
   const dispatch = useDispatch();
   const { allSearchedJobs: jobs = [] } = useSelector((store) => store.job);
   const { user } = useSelector((store) => store.auth);
@@ -91,34 +91,6 @@ const BrowseJobs = () => {
       dispatch(setAllSearchedJobs([]));
     };
   }, [dispatch]);
-
-  if (isLoading) {
-    return (
-      <div className="w-full h-64 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-xl text-slate-500"
-        >
-          Loading jobs...
-        </motion.div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full h-64 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-xl text-red-500"
-        >
-          Error loading jobs: {error}
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full mx-auto my-10">
