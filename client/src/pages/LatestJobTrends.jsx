@@ -19,23 +19,31 @@ const LatestJobTrends = ({ job }) => {
       {/* Content container */}
       <div className="relative z-10">
         {/* Company and Location */}
-        <div className="flex justify-between items-start mb-4">
+        <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">{job?.company?.name}</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+              {job?.company?.name}
+            </h1>
             <div className="flex items-center mt-1 text-sm text-gray-600 dark:text-gray-400">
               <MapPin className="w-4 h-4 mr-1" />
-              <span>{job?.location}</span>
+              <span className="line-clamp-2">{job?.location}</span>
             </div>
           </div>
-          <Badge className="text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 group-hover:bg-green-200 dark:group-hover:bg-green-800 transition-colors duration-300">
-            {job?.jobType}
-          </Badge>
+          <div className="flex justify-end items-center">
+            <Badge className="inline-flex items-center px-3 py-1 text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 rounded-full whitespace-nowrap group-hover:bg-green-200 dark:group-hover:bg-green-800 transition-colors duration-300">
+              {job?.jobType}
+            </Badge>
+          </div>
         </div>
 
         {/* Job Title and Description */}
         <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">{job?.title}</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 group-hover:text-gray-800 dark:group-hover:text-gray-300 transition-colors duration-300">{job?.description}</p>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+            {job?.title}
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 group-hover:text-gray-800 dark:group-hover:text-gray-300 transition-colors duration-300">
+            {job?.description}
+          </p>
         </div>
 
         {/* Job Details */}

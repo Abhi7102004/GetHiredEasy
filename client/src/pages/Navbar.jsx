@@ -13,6 +13,7 @@ import {
   LogOut,
   Building,
   DeleteIcon,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,22 +40,16 @@ const Navbar = () => {
     document.body.classList.contains("dark")
   );
   const navigate = useNavigate();
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const closeSidebarForNavigation = () => {
+    setIsSidebarOpen(false);
+  };
+
   const toggleTheme = () => {
-    setDarkMode(!darkMode);
     if (darkMode) {
       document.body.classList.remove("dark");
       localStorage.setItem("theme", "light");
@@ -62,6 +57,7 @@ const Navbar = () => {
       document.body.classList.add("dark");
       localStorage.setItem("theme", "dark");
     }
+    setDarkMode(!darkMode);
   };
 
   const isActive = (path) => {
@@ -85,7 +81,6 @@ const Navbar = () => {
     const handleDarkModeChange = () => {
       setDarkMode(document.body.classList.contains("dark"));
     };
-
     const observer = new MutationObserver(handleDarkModeChange);
     observer.observe(document.body, {
       attributeFilter: ["class"],
@@ -110,6 +105,7 @@ const Navbar = () => {
         <li key={item.name}>
           <Link
             to={item.path}
+            onClick={closeSidebarForNavigation}
             className={`flex ${
               isActive(item.path) ? "text-purple-700 dark:text-purple-400" : ""
             } items-center space-x-2 hover:text-purple-500 transition-colors duration-300 dark:hover:text-purple-500`}
@@ -123,10 +119,10 @@ const Navbar = () => {
   );
 
   const UserSection = () => (
-    <div className="mt-8 lg:mt-0">
+    <div className="mt-8 md:mt-0">
       {!user ? (
         <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
-          <Link to="/login">
+          <Link to="/login" onClick={closeSidebarForNavigation}>
             <Button
               variant="outline"
               className="text-gray-800 dark:text-white border-gray-800 dark:border-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300"
@@ -134,7 +130,7 @@ const Navbar = () => {
               Login
             </Button>
           </Link>
-          <Link to="/signup">
+          <Link to="/signup" onClick={closeSidebarForNavigation}>
             <Button className="bg-purple-500 dark:bg-purple-600 hover:bg-purple-600 dark:hover:bg-purple-700 text-white transition-all duration-300">
               Signup
             </Button>
@@ -151,11 +147,11 @@ const Navbar = () => {
                 />
               </Avatar>
               <span
-                className={`font-medium dark:text-white ${
+                className={`font-medium ${
                   isActive("/profile")
                     ? "text-purple-700 dark:text-purple-400"
                     : ""
-                } text-gray-800`}
+                } text-gray-800 dark:text-white`}
               >
                 {user.fullName}
               </span>
@@ -178,7 +174,7 @@ const Navbar = () => {
             </div>
             <div className="flex flex-col gap-1 mt-2">
               {user?.role === "student" && (
-                <Link to="/profile">
+                <Link to="/profile" onClick={closeSidebarForNavigation}>
                   <Button
                     variant="ghost"
                     className="w-full justify-start text-gray-800 dark:text-white hover:bg-green-400 dark:hover:bg-green-700 transition-all duration-300"
@@ -188,10 +184,22 @@ const Navbar = () => {
                   </Button>
                 </Link>
               )}
+              <Link to="/report/issue" onClick={closeSidebarForNavigation}>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-gray-800 dark:text-white hover:bg-green-400 dark:hover:bg-green-700 transition-all duration-300"
+                >
+                  <AlertCircle className="mr-2 h-4 w-4" />
+                  Report an Issue
+                </Button>
+              </Link>
               <Button
                 variant="ghost"
                 className="w-full justify-start text-gray-800 dark:text-white hover:bg-red-400 dark:hover:bg-red-700 transition-all duration-300"
-                onClick={() => setSetting(true)}
+                onClick={() => {
+                  setSetting(true);
+                  setIsSidebarOpen(false);
+                }}
               >
                 <DeleteIcon className="mr-2 h-4 w-4" />
                 Delete Account
@@ -199,7 +207,10 @@ const Navbar = () => {
               <Button
                 variant="ghost"
                 className="w-full justify-start text-gray-800 dark:text-white hover:bg-red-300 dark:hover:bg-red-600 transition-all duration-300"
-                onClick={() => setOpen(true)}
+                onClick={() => {
+                  setOpen(true);
+                  setIsSidebarOpen(false);
+                }}
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 Logout
@@ -208,8 +219,6 @@ const Navbar = () => {
           </PopoverContent>
         </Popover>
       )}
-      {open && <Logout open={open} onOpenChange={setOpen} />}
-      {setting && <DeleteAccount isOpen={setting} onOpenChange={setSetting} />}
     </div>
   );
 
@@ -256,7 +265,7 @@ const Navbar = () => {
             </div>
           </div>
 
-          <div className="hidden lg:flex items-center space-x-8">
+          <div className="hidden lg:flex lg:items-center lg:space-x-12">
             <NavItems />
             <UserSection />
             <button
@@ -268,64 +277,81 @@ const Navbar = () => {
               } transition-all duration-300`}
             >
               {darkMode ? (
-                <Sun className="h-5 w-5" />
+                <Sun className="h-[1.2rem] w-[1.2rem]" />
               ) : (
-                <Moon className="h-5 w-5" />
+                <Moon className="h-[1.2rem] w-[1.2rem]" />
               )}
+              <span className="sr-only">Toggle theme</span>
             </button>
           </div>
-
-          <button
-            onClick={toggleTheme}
-            className={`lg:hidden rounded-full p-2 ${
-              darkMode
-                ? "bg-[#2a2a2a] text-white hover:bg-[#3a3a3a]"
-                : "bg-gray-100 text-[#736464] hover:bg-gray-200"
-            } transition-all duration-300`}
-          >
-            {darkMode ? (
-              <Sun className="h-5 w-5" />
-            ) : (
-              <Moon className="h-5 w-5" />
-            )}
-          </button>
+          <div className="lg:hidden">
+            <button
+              onClick={toggleTheme}
+              className={`rounded-full p-2 ${
+                darkMode
+                  ? "bg-[#2a2a2a] text-white hover:bg-[#3a3a3a]"
+                  : "bg-gray-100 text-[#736464] hover:bg-gray-200"
+              } transition-all duration-300`}
+            >
+              {darkMode ? (
+                <Sun className="h-[1.2rem] w-[1.2rem]" />
+              ) : (
+                <Moon className="h-[1.2rem] w-[1.2rem]" />
+              )}
+              <span className="sr-only">Toggle theme</span>
+            </button>
+          </div>
         </div>
+
+        <AnimatePresence>
+          {isSidebarOpen && (
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="fixed inset-y-0 left-0 z-50 w-5/12 bg-white dark:bg-gray-900 shadow-lg lg:hidden"
+            >
+              <div className="p-4 h-full flex flex-col">
+                <button onClick={toggleSidebar} className="self-end mb-4">
+                  <X className="h-6 w-6 text-gray-800 dark:text-white" />
+                </button>
+                <div className="flex-grow overflow-y-auto">
+                  <NavItems />
+                  <UserSection />
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {isSidebarOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+              onClick={toggleSidebar}
+            />
+          )}
+        </AnimatePresence>
       </nav>
 
-      <AnimatePresence>
-        {isSidebarOpen && (
-          <motion.div
-            initial={{ x: "-100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed inset-y-0 left-0 z-[60] w-64 bg-white dark:bg-gray-900 shadow-lg lg:hidden overflow-y-auto"
-          >
-            <div className="p-4 h-full flex flex-col">
-              <button onClick={toggleSidebar} className="self-end mb-4">
-                <X className="h-6 w-6 text-gray-800 dark:text-white" />
-              </button>
-              <div className="flex-grow">
-                <NavItems />
-                <UserSection />
-              </div>
-            </div>
-          </motion.div>
+      {/* Full-screen modals */}
+      <div className="fixed inset-0 z-50 pointer-events-none">
+        {open && (
+          <div className="pointer-events-auto">
+            <Logout open={open} onOpenChange={setOpen} />
+          </div>
         )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {isSidebarOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-[55] lg:hidden"
-            onClick={toggleSidebar}
-          />
+        {setting && (
+          <div className="pointer-events-auto">
+            <DeleteAccount isOpen={setting} onOpenChange={setSetting} />
+          </div>
         )}
-      </AnimatePresence>
+      </div>
     </>
   );
 };

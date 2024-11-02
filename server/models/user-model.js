@@ -14,6 +14,18 @@ const userSchema = new mongoose.Schema(
       trim: true,
       match: [/^\S+@\S+\.\S+$/, "Please enter a valid email address"],
     },
+    gender:{
+      type:String,
+      enum:["male","female","other"]
+    },
+    social:{
+      linkedin:{
+        type:String
+      },
+      github:{
+        type:String
+      }
+    },
     otp: {
       type: String,
       required: false,
@@ -54,10 +66,6 @@ const userSchema = new mongoose.Schema(
       profilePicture: {
         type: String,
         default: "",
-      },
-      company: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Company",
       },
     },
 

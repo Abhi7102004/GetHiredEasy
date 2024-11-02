@@ -5,22 +5,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FilterCard from "./FilterCard";
 import JobCard from "./JobCard";
 import useGetAllJobs from "@/hooks/useGetAllJobs";
+import { FolderSearch } from "lucide-react";
 
 const Jobs = () => {
   useGetAllJobs();
-  const { jobs } = useSelector((store) => store.job);
+  const { jobs = [] } = useSelector((store) => store.job);
   const { user } = useSelector((store) => store.auth);
 
-  const appliedJobs = jobs.filter((job) =>
-    job.applications?.some((application) => application.applicant === user?._id)
-  );
-
-  const availableJobs = jobs.filter(
-    (job) =>
-      !job.applications?.some(
-        (application) => application.applicant === user?._id
+  const appliedJobs =
+    jobs?.filter((job) =>
+      job?.applications?.some(
+        (application) => application?.applicant === user?._id
       )
-  );
+    ) || [];
+
+  const availableJobs =
+    jobs?.filter(
+      (job) =>
+        !job?.applications?.some(
+          (application) => application?.applicant === user?._id
+        )
+    ) || [];
 
   const cardVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -34,17 +39,21 @@ const Jobs = () => {
     }),
   };
 
-  const JobsGrid = ({ jobsList }) => (
+  const JobsGrid = ({ jobsList = [] }) => (
     <div className="w-full">
-      {jobsList.length === 0 ? (
-        <motion.p
-          className="text-xl text-center text-gray-500 dark:text-gray-400 mt-8"
+      {!jobsList || jobsList.length === 0 ? (
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          No jobs found
-        </motion.p>
+          <div className="flex flex-col gap-2 items-center justify-center mb-8 rounded-lg">
+            <FolderSearch className="w-8 h-8 text-slate-400" />
+            <h3 className="text-xl font-semibold dark:text-slate-200 text-slate-500">
+              No Jobs Found
+            </h3>
+          </div>
+        </motion.div>
       ) : (
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6"
@@ -53,7 +62,11 @@ const Jobs = () => {
           variants={cardVariants}
         >
           {jobsList.map((job, index) => (
-            <motion.div key={job._id} custom={index} variants={cardVariants}>
+            <motion.div
+              key={job?._id || index}
+              custom={index}
+              variants={cardVariants}
+            >
               <JobCard job={job} />
             </motion.div>
           ))}
@@ -84,13 +97,13 @@ const Jobs = () => {
                   value="available"
                   className="data-[state=active]:bg-blue-500 data-[state=active]:text-white rounded-md px-6 py-2 text-sm font-medium transition-all"
                 >
-                  Available Jobs ({availableJobs.length})
+                  Available Jobs ({availableJobs?.length || 0})
                 </TabsTrigger>
                 <TabsTrigger
                   value="applied"
                   className="data-[state=active]:bg-green-500 data-[state=active]:text-white rounded-md px-6 py-2 text-sm font-medium transition-all"
                 >
-                  Applied Jobs ({appliedJobs.length})
+                  Applied Jobs ({appliedJobs?.length || 0})
                 </TabsTrigger>
               </TabsList>
             </div>

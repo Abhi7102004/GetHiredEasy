@@ -73,12 +73,6 @@ const JobRow = ({ job, onDelete }) => {
               <Eye className="mr-2 h-4 w-4" />
               <span>View Applicants</span>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => navigate(`/admin/jobs/${job?._id}`)}
-            >
-              <Edit2 className="mr-2 h-4 w-4" />
-              <span>Edit</span>
-            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onDelete(job?._id)}>
               <Trash2 className="mr-2 h-4 w-4" />
               <span>Delete</span>

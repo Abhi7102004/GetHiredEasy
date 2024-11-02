@@ -25,4 +25,6 @@ export const FILTER_ROUTE=`${JOB_ROUTE}/filter`
 export const DELETE_COMPANY_BY_ID=`${COMPANY_ROUTE}/unregister`
 export const CHANGE_PASSWORD_ROUTE=`${USER_ROUTE}/change-password`
 export const HANDLE_DELETE_ACCOUNT_ROUTE=`${USER_ROUTE}/delete`
+export const ISSUE_ROUTE="/api/v1/report/issue"
+export const POST_ISSUE_ROUTE=`${ISSUE_ROUTE}/post`
 export const DUMMY_PROFILE_URL="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQADjfoADAlJPrsl_hiiOMeE-FBor-i6hEAVg&s"

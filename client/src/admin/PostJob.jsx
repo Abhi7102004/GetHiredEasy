@@ -138,15 +138,6 @@ const PostJob = () => {
       setCity(value);
       handleCityChange(value);
     }
-
-    const newLocation = [
-      value,
-      name === "country" ? "" : state,
-      name === "country" || name === "state" ? "" : city,
-    ]
-      .filter(Boolean)
-      .join(", ");
-    setFormData((prevData) => ({ ...prevData, location: newLocation }));
   };
 
   const handleSubmit = async (e) => {
@@ -160,7 +151,7 @@ const PostJob = () => {
       location: fullLocation,
     };
     try {
-      const response = await apiClient.post(POST_JOB_ROUTE, formData, {
+      const response = await apiClient.post(POST_JOB_ROUTE, finalFormData, {
         headers: {
           "Content-Type": "application/json",
         },

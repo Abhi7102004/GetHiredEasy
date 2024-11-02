@@ -80,7 +80,6 @@ export const withdrawJob = async (req, res) => {
     const jobId = req.params.id;
     const userId = req.userId;
 
-    // Input validation
     if (!jobId) {
       return res.status(400).json({
         message: "Job Id is required",
@@ -95,7 +94,6 @@ export const withdrawJob = async (req, res) => {
       });
     }
 
-    // Find user and job with proper error handling
     const [user, job] = await Promise.all([
       UserModel.findById(userId),
       JobModel.findById(jobId).populate('company')
@@ -134,7 +132,7 @@ export const withdrawJob = async (req, res) => {
       },
       { new: true }
     );
-
+    console.log(updatedJob)
     try {
       const html = getWithdrawJobEmailTemplate(
         user?.fullName,
@@ -182,12 +180,6 @@ export const getAppliedJobs = async (req, res) => {
       },
     });
     application = application.filter((app) => app?.job !== null);
-    if (application.length===0) {
-      return res.status(200).json({
-        message: "No applications.",
-        success: false,
-      });
-    }
     return res.status(200).json({
       application,
       success: true,

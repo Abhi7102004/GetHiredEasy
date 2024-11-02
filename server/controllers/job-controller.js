@@ -38,12 +38,12 @@ export const PostJob = async (req, res) => {
         .status(400)
         .json({ message: "Please provide a valid salary.", success: false });
     }
-    // if (new Date(expiryDate) < Date.now()) {
-    //   return res.json({
-    //     success: false,
-    //     message: "Expiration date must be in the future.",
-    //   });
-    // }
+    if (new Date(expiryDate) < Date.now()) {
+      return res.json({
+        success: false,
+        message: "Expiration date must be in the future.",
+      });
+    }
     const job = await JobModel.create({
       title,
       description,
@@ -57,7 +57,6 @@ export const PostJob = async (req, res) => {
       company: companyId,
       createdBy: userId,
     });
-    console.log(job);
     return res.status(201).json({
       message: "New Job Created Successfully",
       job,
@@ -131,7 +130,7 @@ export const getAllJobs = async (req, res) => {
     if (!jobs || jobs.length === 0) {
       return res.status(200).json({
         message: "No Job Found",
-        success: false,
+        success: true,
       });
     }
     jobs = jobs?.filter((job) => new Date(job?.expiryDate) >= Date.now());
@@ -197,10 +196,11 @@ export const getAdminJobs = async (req, res) => {
 export const filterJobs = async (req, res) => {
   try {
     const { titleList, salary, location, jobType, experienceLevel } = req.body;
+    // console.log(titleList)
     const filter = {};
     if (titleList && Array.isArray(titleList) && titleList.length > 0) {
       filter.title = {
-        $regex: titleList.map((title) => `(?=.*${title})`).join(""),
+        $regex: titleList.map((title) => `${title}`).join("|"),
         $options: "i",
       };
     }

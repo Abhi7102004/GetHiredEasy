@@ -5,12 +5,13 @@ import {
   Phone,
   FileText,
   Edit,
-  Calendar,
-  Building,
   CheckCircle,
   XCircle,
   Clock,
   ChevronDown,
+  Github,
+  Linkedin,
+  User,
 } from "lucide-react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -21,11 +22,12 @@ import { useSelector } from "react-redux";
 import { DUMMY_PROFILE_URL } from "@/utils/constants";
 import useGetAppliedJobs from "@/hooks/useGetAppliedJobs";
 import { useNavigate } from "react-router-dom";
+import ImagePreviewModal from "./ImagePreviewModal";
 
 const ProfileCard = ({ setOpen }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isImagePreviewOpen,setIsImagePreviewOpen]=useState(false)
   const { user } = useSelector((store) => store.auth);
-
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => setIsVisible(entry.isIntersecting),
@@ -55,29 +57,48 @@ const ProfileCard = ({ setOpen }) => {
       <Card className="w-full mx-auto bg-white/30 dark:bg-gray-950/30 shadow-lg transition-all duration-500 hover:shadow-blue-200 dark:hover:shadow-blue-900 rounded-2xl overflow-hidden">
         <CardHeader className="pb-2">
           <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-8">
-            <Avatar className="h-40 w-40 border-4 border-blue-500 dark:border-blue-400 shadow-xl">
+            <Avatar
+              onClick={() => setIsImagePreviewOpen(true)}
+              className="h-40 w-40 border-4 border-blue-500 dark:border-blue-400 shadow-xl"
+            >
               <AvatarImage
                 src={user.profile?.profilePicture || DUMMY_PROFILE_URL}
                 alt={user.fullName}
               />
             </Avatar>
-            <div className="text-center md:text-left">
+            <div className="text-center md:text-left flex-grow">
               <motion.h1
-                className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2"
+                className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent mb-3"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
               >
-                {user.fullName}
+                {user.fullName} (
+                {user?.gender?.charAt(0).toUpperCase() +
+                  user?.gender?.slice(1).toLowerCase()}
+                )
               </motion.h1>
               <motion.p
-                className="text-xl text-blue-600 dark:text-blue-300"
+                className="text-xl text-gray-600 dark:text-gray-300 mb-4 max-w-2xl"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
               >
                 {user?.profile?.bio || "Add your information"}
               </motion.p>
+
+              <div className="flex cursor-pointer flex-wrap gap-4 justify-center md:justify-start">
+                <SocialLink
+                  href={user?.social?.github}
+                  icon={Github}
+                  label="GitHub"
+                />
+                <SocialLink
+                  href={user?.social?.linkedin}
+                  icon={Linkedin}
+                  label="LinkedIn"
+                />
+              </div>
             </div>
             <div className="ml-auto">
               <Button
@@ -130,6 +151,12 @@ const ProfileCard = ({ setOpen }) => {
           )}
         </CardContent>
       </Card>
+      <ImagePreviewModal
+        isOpen={isImagePreviewOpen}
+        onClose={() => setIsImagePreviewOpen(false)}
+        imageUrl={user.profile?.profilePicture || DUMMY_PROFILE_URL}
+        altText={user.fullName}
+      />
     </motion.div>
   );
 };
@@ -145,12 +172,22 @@ const InfoItem = ({ icon: Icon, label, value }) => (
     </div>
   </div>
 );
+const SocialLink = ({ href, icon: Icon, label }) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800/60 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 hover:shadow-md group"
+  >
+    <Icon className="h-5 w-5 group-hover:text-blue-500 transition-colors duration-300" />
+    <span className="font-medium">{label}</span>
+  </a>
+);
 
 const AppliedJobsTable = () => {
   const [expandedJob, setExpandedJob] = useState(null);
   useGetAppliedJobs();
   const { allAppliedJobs } = useSelector((store) => store.job);
-
   const getStatusStyle = (status) => {
     switch (status.toLowerCase()) {
       case "accepted":
@@ -166,39 +203,45 @@ const AppliedJobsTable = () => {
   const getStatusIcon = (status) => {
     switch (status.toLowerCase()) {
       case "accepted":
-        return <CheckCircle className="h-5 w-5 mr-2 inline-block text-green-600 dark:text-green-400" />;
+        return (
+          <CheckCircle className="h-5 w-5 mr-2 inline-block text-green-600 dark:text-green-400" />
+        );
       case "rejected":
-        return <XCircle className="h-5 w-5 mr-2 inline-block text-red-600 dark:text-red-400" />;
+        return (
+          <XCircle className="h-5 w-5 mr-2 inline-block text-red-600 dark:text-red-400" />
+        );
       case "pending":
       default:
-        return <Clock className="h-5 w-5 mr-2 inline-block text-yellow-600 dark:text-yellow-400" />;
+        return (
+          <Clock className="h-5 w-5 mr-2 inline-block text-yellow-600 dark:text-yellow-400" />
+        );
     }
   };
 
   const tableRowVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 0.3 } },
-    exit: { opacity: 0, transition: { duration: 0.2 } }
+    exit: { opacity: 0, transition: { duration: 0.2 } },
   };
 
   const expandedRowVariants = {
-    hidden: { opacity: 0, height: 0, overflow: 'hidden' },
-    visible: { 
-      opacity: 1, 
-      height: 'auto',
-      transition: { 
+    hidden: { opacity: 0, height: 0, overflow: "hidden" },
+    visible: {
+      opacity: 1,
+      height: "auto",
+      transition: {
         height: { type: "spring", stiffness: 100, damping: 30 },
-        opacity: { duration: 0.2, delay: 0.1 }
-      } 
+        opacity: { duration: 0.2, delay: 0.1 },
+      },
     },
-    exit: { 
-      opacity: 0, 
+    exit: {
+      opacity: 0,
       height: 0,
-      transition: { 
+      transition: {
         height: { type: "spring", stiffness: 100, damping: 30 },
-        opacity: { duration: 0.2 }
-      } 
-    }
+        opacity: { duration: 0.2 },
+      },
+    },
   };
 
   return (
@@ -213,17 +256,27 @@ const AppliedJobsTable = () => {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-100 dark:bg-gray-800">
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Job Role</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Company</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Job Role
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Company
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white/50 dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
               {allAppliedJobs?.map((appliedJob, index) => (
                 <React.Fragment key={index}>
-                  <motion.tr 
+                  <motion.tr
                     className="hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors duration-200"
                     variants={tableRowVariants}
                     initial="hidden"
@@ -240,11 +293,17 @@ const AppliedJobsTable = () => {
                       {appliedJob?.job?.company?.name || "Unknown Company"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <motion.span 
-                        className={`px-2 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full ${getStatusStyle(appliedJob.status)}`}
+                      <motion.span
+                        className={`px-2 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full ${getStatusStyle(
+                          appliedJob.status
+                        )}`}
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 30,
+                        }}
                       >
                         {getStatusIcon(appliedJob.status)}
                         {appliedJob.status || "Pending"}
@@ -252,14 +311,20 @@ const AppliedJobsTable = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       <motion.button
-                        onClick={() => setExpandedJob(expandedJob === index ? null : index)}
+                        onClick={() =>
+                          setExpandedJob(expandedJob === index ? null : index)
+                        }
                         className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                       >
                         <motion.div
                           animate={{ rotate: expandedJob === index ? 180 : 0 }}
-                          transition={{ type: "spring", stiffness: 200, damping: 30 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 200,
+                            damping: 30,
+                          }}
                         >
                           <ChevronDown className="h-5 w-5" />
                         </motion.div>
@@ -276,7 +341,7 @@ const AppliedJobsTable = () => {
                       >
                         <td colSpan="5" className="px-6 py-4">
                           <div className="text-sm text-gray-700 dark:text-gray-300">
-                            <motion.p 
+                            <motion.p
                               className="font-semibold"
                               initial={{ opacity: 0, y: -10 }}
                               animate={{ opacity: 1, y: 0 }}
@@ -289,9 +354,10 @@ const AppliedJobsTable = () => {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.2 }}
                             >
-                              {appliedJob.job?.description || "No description available."}
+                              {appliedJob.job?.description ||
+                                "No description available."}
                             </motion.p>
-                            <motion.p 
+                            <motion.p
                               className="mt-2 font-semibold"
                               initial={{ opacity: 0, y: -10 }}
                               animate={{ opacity: 1, y: 0 }}
@@ -306,7 +372,7 @@ const AppliedJobsTable = () => {
                             >
                               {appliedJob.job?.location || "Not specified"}
                             </motion.p>
-                            <motion.p 
+                            <motion.p
                               className="mt-2 font-semibold"
                               initial={{ opacity: 0, y: -10 }}
                               animate={{ opacity: 1, y: 0 }}
@@ -319,7 +385,8 @@ const AppliedJobsTable = () => {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.6 }}
                             >
-                              {appliedJob.job?.company?.website || "Not available"}
+                              {appliedJob.job?.company?.website ||
+                                "Not available"}
                             </motion.p>
                           </div>
                         </td>
@@ -338,13 +405,13 @@ const AppliedJobsTable = () => {
 
 const Dashboard = () => {
   const [open, setOpen] = useState(false);
-  const navigate=useNavigate();
-  const {user}=useSelector(store=>store.auth)
+  const navigate = useNavigate();
+  const { user } = useSelector((store) => store.auth);
   useEffect(() => {
     if (!user) {
-      navigate('/login');
+      navigate("/login");
     }
-  },[]); 
+  }, []);
 
   if (!user) {
     return <div>Do Login...</div>;

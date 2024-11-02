@@ -11,6 +11,7 @@ const useGetAppliedJobs = () => {
         const fetchAppliedJobs = async () => {
             try {
                 const res = await apiClient.get(`${GET_APPLIED_JOB_ROUTE}`, {withCredentials:true});
+                // console.log(res)
                 if(res.data.success){
                     dispatch(setAllAppliedJobs(res.data.application));
                 }

@@ -22,13 +22,14 @@ import PostJob from "./admin/PostJob";
 import Applicants from "./admin/Applicants";
 import { useSelector } from "react-redux";
 import Footer from "./pages/Footer";
-// import ErrorPage from "./pages/ErrorPage";
+import ErrorPage from "./pages/ErrorPage";
+import ReportIssue from "./pages/ReportIssue";
 
 const Layout = () => {
   return (
     <div className="min-h-screen text-gray-900 dark:text-white">
       <Navbar />
-      <div className="px-6 lg:px-20"> 
+      <div className="px-6 lg:px-20">
         <Outlet />
       </div>
       {/* <Footer/> */}
@@ -49,14 +50,22 @@ const RestrictedUserRoute = ({ children }) => {
 const RestrictedAuthRoute = ({ children }) => {
   const { user } = useSelector((store) => store.auth);
   const isAuthenticated = user ? true : false;
-  return isAuthenticated ? user?.role==='student'?<Navigate to="/home" replace />:<Navigate to="/admin/companies" replace /> : children;
+  return isAuthenticated ? (
+    user?.role === "student" ? (
+      <Navigate to="/home" replace />
+    ) : (
+      <Navigate to="/admin/companies" replace />
+    )
+  ) : (
+    children
+  );
 };
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
-    // errorElement: <ErrorPage />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: "/",
@@ -73,6 +82,10 @@ const router = createBrowserRouter([
             <Home />
           </RestrictedUserRoute>
         ),
+      },
+      {
+        path:"/report/issue",
+        element:<ReportIssue/>
       },
       {
         path: "/login",

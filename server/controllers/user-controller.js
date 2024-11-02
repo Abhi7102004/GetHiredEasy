@@ -7,6 +7,9 @@ import { generateOTP } from "../utils/constants/generateOtp.js";
 import { sendEmail } from "../config/nodemailer.js";
 import hashPassword from "../utils/constants/hashPassword.js";
 import getLoginOTPTemplate from "../email-templates/getLoginOTPTemplate.js";
+import JobModel from "../models/job-model.js";
+import ApplicationModel from "../models/application-model.js";
+import CompanyModel from "../models/company-model.js";
 
 export const signup = async (req, res) => {
   try {
@@ -69,7 +72,6 @@ export const signup = async (req, res) => {
     console.log(error);
   }
 };
-
 export const login = async (req, res) => {
   try {
     const { email, password, role } = req.body;
@@ -233,7 +235,7 @@ export const logout = (req, res) => {
 };
 export const updateProfile = async (req, res) => {
   try {
-    const { fullName, email, phoneNumber, skills, bio } = req.body;
+    const { fullName, email, phoneNumber, skills, bio,gender,github,linkedin } = req.body;
     const userId = req.userId;
     const resume = req?.files?.resume?.length > 0 ? req.files.resume[0] : null;
     const profileImage =
@@ -244,7 +246,7 @@ export const updateProfile = async (req, res) => {
         .json({ message: "Unauthorized access.", success: false });
     }
 
-    if (!fullName || !email || !phoneNumber || !skills || !bio) {
+    if (!fullName || !email || !phoneNumber || !skills || !bio || !gender) {
       return res
         .status(400)
         .json({ message: "All fields are required.", success: false });
@@ -270,7 +272,7 @@ export const updateProfile = async (req, res) => {
         .status(404)
         .json({ message: "User not found.", success: false });
     }
-
+    console.log(skills)
     const skillsArray = skills
       .split(",")
       .map((skill) => skill.trim())
@@ -303,6 +305,9 @@ export const updateProfile = async (req, res) => {
     user.phoneNumber = phoneNumber;
     user.profile.skills = skillsArray;
     user.profile.bio = bio;
+    user.gender=gender;
+    user.social.github=github || ""
+    user.social.linkedin=linkedin || ""
     if (resume) user.profile.resumeOriginalName = resume.originalname;
     if (resumeUrl) user.profile.resume = resumeUrl;
     if (profileImageUrl) user.profile.profilePicture = profileImageUrl;
@@ -314,8 +319,10 @@ export const updateProfile = async (req, res) => {
         fullName: user.fullName,
         email: user.email,
         phoneNumber: user.phoneNumber,
+        gender:user.gender,
         role: user.role,
         profile: user.profile,
+        social:user.social
       },
       success: true,
     });
@@ -373,26 +380,49 @@ export const DeleteAccount = async (req, res) => {
         message: "You are not authenticated",
       });
     }
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
     res.cookie("jwtToken", "", {
       httpOnly: true,
       sameSite: "strict",
       maxAge: 0,
     });
-    const user = await UserModel.findByIdAndDelete(userId);
-    if (!user) {
-      if (!userId) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
-      }
+    
+    if (user.role === "student") {
+      const applications = await ApplicationModel.find({ applicant: userId });
+      const jobIds = applications.map(app => app.job);
+      await JobModel.updateMany(
+        { _id: { $in: jobIds } },
+        { $pull: { applications: { $in: applications.map(app => app._id) } } }
+      );
+
+      await ApplicationModel.deleteMany({ applicant: userId });
+      
+    } else if (user.role === "recruiter") {
+      const companies = await CompanyModel.find({ userId: userId });
+      const companyIds = companies.map(company => company._id);
+      
+      const jobs = await JobModel.find({ company: { $in: companyIds } });
+      const jobIds = jobs.map(job => job._id);
+      
+      await ApplicationModel.deleteMany({ job: { $in: jobIds } });
+      await JobModel.deleteMany({ company: { $in: companyIds } });
+      await CompanyModel.deleteMany({ userId: userId });
     }
+    await UserModel.findByIdAndDelete(userId);
+
     return res.status(200).json({
       success: true,
-      message: "Account deleted Successfully",
+      message: "Account and all associated data deleted successfully",
     });
   } catch (error) {
-    return res.status(200).json({
+    console.error("Delete account error:", error);
+    return res.status(500).json({
       success: false,
       message: "Internal Server Error",
     });

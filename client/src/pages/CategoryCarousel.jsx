@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useDispatch } from "react-redux";
@@ -11,12 +11,12 @@ const categories = [
   "Data Science",
   "Graphic Designer",
   "FullStack ",
-  "Testing "
+  "Testing ",
 ];
 
 const CategoryCarousel = () => {
-  const [activeIndex, setActiveIndex] = React.useState(0);
-  const [isAnimating, setIsAnimating] = React.useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -73,7 +73,7 @@ const CategoryCarousel = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="flex-1 text-center px-4 py-2 rounded-lg transition-all hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="flex-1 text-center px-4 py-2 rounded-lg transition-all "
             >
               <h3 className="text-3xl font-semibold text-gray-800 dark:text-white">
                 {categories[activeIndex]}

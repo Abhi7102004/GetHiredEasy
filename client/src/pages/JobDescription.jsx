@@ -75,7 +75,13 @@ const JobDescription = () => {
       getSingleJob();
     }
   }, [jobId, dispatch, user?._id]);
-
+  const handleLocationClick = (location) => {
+    const encodedLocation = encodeURIComponent(location);
+    window.open(
+      `https://www.google.com/maps/search/?api=1&query=${encodedLocation}`,
+      "_blank"
+    );
+  };
   const handleApply = async () => {
     setIsLoading(true);
     try {
@@ -171,13 +177,13 @@ const JobDescription = () => {
             <div className="flex flex-col md:flex-row gap-6 items-center">
               <div className="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
                 <img
-                  src={singleJob.company?.logo || DUMMY_PROFILE_URL }
+                  src={singleJob.company?.logo || DUMMY_PROFILE_URL}
                   alt={singleJob.company?.name || "Company Logo"}
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="flex-grow">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                <h3 className="text-2xl text-center md:text-left font-bold text-gray-900 dark:text-white">
                   {singleJob.company?.name || "Company Name"}
                 </h3>
                 <div className="flex flex-wrap gap-4 mt-3">
@@ -186,16 +192,22 @@ const JobDescription = () => {
                       href={singleJob.company.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-violet-600"
+                      className="flex items-center text-sm text-gray-600 hover:underline dark:text-gray-400 dark:hover:text-violet-400"
                     >
-                      <Globe className="w-4 h-4 mr-1" />
+                      <Globe className="w-4 h-4 mr-1 text-violet-500 " />
                       Website
                     </a>
                   )}
-                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    {singleJob.location}
-                  </div>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      singleJob.location
+                    )}`}
+                    target="_blank"
+                    className="flex line-clamp-1 items-center text-sm text-gray-600 hover:underline dark:text-gray-400 dark:hover:text-violet-400"
+                  >
+                    <MapPin className="w-4 h-4 mr-1 text-violet-500" />
+                    View Location
+                  </a>
                 </div>
               </div>
             </div>
@@ -356,11 +368,11 @@ const JobDescription = () => {
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                   Requirements
                 </h2>
-                <div className="flex md:gap-8 gap-4 flex-grow">
+                <div className="flex md:gap-3 gap-4 items-center flex-wrap">
                   {singleJob.requirements.map((requirement, index) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-violet-500 mt-1 flex-shrink-0" />
-                      <span className="text-gray-600 dark:text-gray-300">
+                    <div key={index} className="flex items-center gap-1">
+                      <CheckCircle2 className="w-5 h-5 text-violet-500 flex-shrink-0" />
+                      <span className="text-gray-600 hover:text-white hover:bg-violet-500 px-[6px] py-[2px] rounded-lg hover:dark:bg-violet-700 dark:text-gray-300">
                         {requirement}
                       </span>
                     </div>
@@ -369,7 +381,10 @@ const JobDescription = () => {
               </motion.div>
 
               {/* Application Status */}
-              <ApplicationStatus isApplied={isApplied} userApplication={userApplication} />
+              <ApplicationStatus
+                isApplied={isApplied}
+                userApplication={userApplication}
+              />
             </motion.div>
           </CardContent>
         </Card>

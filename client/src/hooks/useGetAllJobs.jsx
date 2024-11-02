@@ -18,6 +18,9 @@ const useGetAllJobs = () => {
         const response = await apiClient.get(url, {
           withCredentials: true,
         });
+        console.log(response)
+        // console.log(url===GET_ALL_JOB_ROUTE)
+        // console.log(response.data.jobs)
         if (response.data.success) {
           if(url===GET_ALL_JOB_ROUTE) dispatch(getAllJobs(response.data.jobs));
           else dispatch(setAllSearchedJobs(response.data.jobs))
