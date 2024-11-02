@@ -24,9 +24,9 @@ const corsOption = {
 };
 
 app.use(cors(corsOption));
-app.get("/", (req, res) => {
-  res.send("Hello from backend");
-});
+// app.get("/", (req, res) => {
+//   res.send("Hello from backend");
+// });
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/company", companyRoute);
 app.use("/api/v1/job", jobRoute);
