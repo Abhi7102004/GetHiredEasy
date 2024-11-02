@@ -9,10 +9,8 @@ import jobRoute from "./routes/job-routes.js";
 import applicationRoute from "./routes/application-route.js";
 import reportIssueRoute from "./routes/report-issue-route.js";
 const app = express();
-// import path from "path";
 dotenv.config();
 const PORT = process.env.PORT || 3000;
-// const _dirname = path.resolve();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -30,16 +28,8 @@ app.use("/api/v1/job", jobRoute);
 app.use("/api/v1/application", applicationRoute);
 app.use("/api/v1/report/issue", reportIssueRoute);
 
-// app.use(express.static(path.join(_dirname, "/client/dist")));
-// app.get("*", (_, res) => {
-//   res.sendFile(path.resolve(_dirname, "client", "dist", "index.html"));
-// });
-
 app.listen(PORT, () => {
   connectDB();
   console.log(`Server is running on port ${PORT}`);
 });
 
-// "dev": "nodemon server/app.js",
-// "build": "npm install && npm install --prefix client && npm run build --prefix client",
-// "start": "nodemon server/app.js"
