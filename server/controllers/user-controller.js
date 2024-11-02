@@ -44,10 +44,11 @@ export const signup = async (req, res) => {
       },
     });
 
-    const token = createToken(newUser._id);
+    const token = createToken(newUser?._id);
     res.cookie("jwtToken", token, {
       httpOnly: true,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
     const user = {
@@ -102,10 +103,11 @@ export const login = async (req, res) => {
         success: false,
       });
     }
-    const token = createToken(user._id);
+    const token = createToken(user?._id);
     res.cookie("jwtToken", token, {
       httpOnly: true,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
     try {
@@ -235,7 +237,16 @@ export const logout = (req, res) => {
 };
 export const updateProfile = async (req, res) => {
   try {
-    const { fullName, email, phoneNumber, skills, bio,gender,github,linkedin } = req.body;
+    const {
+      fullName,
+      email,
+      phoneNumber,
+      skills,
+      bio,
+      gender,
+      github,
+      linkedin,
+    } = req.body;
     const userId = req.userId;
     const resume = req?.files?.resume?.length > 0 ? req.files.resume[0] : null;
     const profileImage =
@@ -272,7 +283,7 @@ export const updateProfile = async (req, res) => {
         .status(404)
         .json({ message: "User not found.", success: false });
     }
-    console.log(skills)
+    console.log(skills);
     const skillsArray = skills
       .split(",")
       .map((skill) => skill.trim())
@@ -305,9 +316,9 @@ export const updateProfile = async (req, res) => {
     user.phoneNumber = phoneNumber;
     user.profile.skills = skillsArray;
     user.profile.bio = bio;
-    user.gender=gender;
-    user.social.github=github || ""
-    user.social.linkedin=linkedin || ""
+    user.gender = gender;
+    user.social.github = github || "";
+    user.social.linkedin = linkedin || "";
     if (resume) user.profile.resumeOriginalName = resume.originalname;
     if (resumeUrl) user.profile.resume = resumeUrl;
     if (profileImageUrl) user.profile.profilePicture = profileImageUrl;
@@ -319,10 +330,10 @@ export const updateProfile = async (req, res) => {
         fullName: user.fullName,
         email: user.email,
         phoneNumber: user.phoneNumber,
-        gender:user.gender,
+        gender: user.gender,
         role: user.role,
         profile: user.profile,
-        social:user.social
+        social: user.social,
       },
       success: true,
     });
@@ -392,24 +403,23 @@ export const DeleteAccount = async (req, res) => {
       sameSite: "strict",
       maxAge: 0,
     });
-    
+
     if (user.role === "student") {
       const applications = await ApplicationModel.find({ applicant: userId });
-      const jobIds = applications.map(app => app.job);
+      const jobIds = applications.map((app) => app.job);
       await JobModel.updateMany(
         { _id: { $in: jobIds } },
-        { $pull: { applications: { $in: applications.map(app => app._id) } } }
+        { $pull: { applications: { $in: applications.map((app) => app._id) } } }
       );
 
       await ApplicationModel.deleteMany({ applicant: userId });
-      
     } else if (user.role === "recruiter") {
       const companies = await CompanyModel.find({ userId: userId });
-      const companyIds = companies.map(company => company._id);
-      
+      const companyIds = companies.map((company) => company._id);
+
       const jobs = await JobModel.find({ company: { $in: companyIds } });
-      const jobIds = jobs.map(job => job._id);
-      
+      const jobIds = jobs.map((job) => job._id);
+
       await ApplicationModel.deleteMany({ job: { $in: jobIds } });
       await JobModel.deleteMany({ company: { $in: companyIds } });
       await CompanyModel.deleteMany({ userId: userId });
