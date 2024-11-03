@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const corsOption = {
-  origin: "https://gethiredeasy-v1.onrender.com",
+  origin: "https://celebrated-pasca-601035.netlify.app",
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
 };
