@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   RouterProvider,
   createBrowserRouter,
   Outlet,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 import Navbar from "./pages/Navbar";
 import Home from "./pages/Home";
@@ -21,18 +22,25 @@ import AdminJobs from "./admin/AdminJobs";
 import PostJob from "./admin/PostJob";
 import Applicants from "./admin/Applicants";
 import { useSelector } from "react-redux";
-import Footer from "./pages/Footer";
 import ErrorPage from "./pages/ErrorPage";
 import ReportIssue from "./pages/ReportIssue";
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
 const Layout = () => {
   return (
     <div className="min-h-screen text-gray-900 dark:text-white">
+      <ScrollToTop/>
       <Navbar />
       <div className="px-6 lg:px-20">
         <Outlet />
       </div>
-      {/* <Footer/> */}
     </div>
   );
 };
@@ -65,7 +73,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
-    // errorElement: <ErrorPage />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: "/",
@@ -84,8 +92,8 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path:"/report/issue",
-        element:<ReportIssue/>
+        path: "/report/issue",
+        element: <ReportIssue />,
       },
       {
         path: "/login",

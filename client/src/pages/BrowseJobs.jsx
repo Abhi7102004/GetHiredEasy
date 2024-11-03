@@ -62,7 +62,7 @@ const JobsGrid = ({ jobsList }) => {
 };
 
 const BrowseJobs = () => {
-  useGetAllJobs(); // Just call the hook without destructuring
+  useGetAllJobs(); 
   const dispatch = useDispatch();
   const { allSearchedJobs: jobs = [] } = useSelector((store) => store.job);
   const { user } = useSelector((store) => store.auth);

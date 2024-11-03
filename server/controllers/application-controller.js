@@ -132,7 +132,7 @@ export const withdrawJob = async (req, res) => {
       },
       { new: true }
     );
-    console.log(updatedJob)
+    // console.log(updatedJob)
     try {
       const html = getWithdrawJobEmailTemplate(
         user?.fullName,

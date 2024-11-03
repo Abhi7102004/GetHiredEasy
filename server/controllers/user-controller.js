@@ -284,7 +284,6 @@ export const updateProfile = async (req, res) => {
         .status(404)
         .json({ message: "User not found.", success: false });
     }
-    console.log(skills);
     const skillsArray = skills
       .split(",")
       .map((skill) => skill.trim())
