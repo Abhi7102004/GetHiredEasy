@@ -1,5 +1,5 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useSelector } from "react-redux";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FilterCard from "./FilterCard";
@@ -12,31 +12,37 @@ const Jobs = () => {
   const { jobs = [] } = useSelector((store) => store.job);
   const { user } = useSelector((store) => store.auth);
 
-  const appliedJobs =
-    jobs?.filter((job) =>
-      job?.applications?.some(
+  const appliedJobs = jobs?.filter((job) =>
+    job?.applications?.some(
+      (application) => application?.applicant === user?._id
+    )
+  ) || [];
+
+  const availableJobs = jobs?.filter(
+    (job) =>
+      !job?.applications?.some(
         (application) => application?.applicant === user?._id
       )
-    ) || [];
-
-  const availableJobs =
-    jobs?.filter(
-      (job) =>
-        !job?.applications?.some(
-          (application) => application?.applicant === user?._id
-        )
-    ) || [];
+  ) || [];
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: (i) => ({
+    initial: { opacity: 0, y: 50 },
+    animate: (i) => ({
       opacity: 1,
       y: 0,
       transition: {
-        delay: i * 0.3,
-        duration: 0.4,
+        delay: i * 0.2,
+        duration: 0.3,
+        ease: "easeOut"
       },
     }),
+    exit: {
+      opacity: 0,
+      y: 20,
+      transition: {
+        duration: 0.2
+      }
+    }
   };
 
   const JobsGrid = ({ jobsList = [] }) => (
@@ -45,7 +51,8 @@ const Jobs = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
         >
           <div className="flex flex-col gap-2 items-center justify-center mb-8 rounded-lg">
             <FolderSearch className="w-8 h-8 text-slate-400" />
@@ -55,22 +62,26 @@ const Jobs = () => {
           </div>
         </motion.div>
       ) : (
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6"
-          initial="hidden"
-          animate="visible"
-          variants={cardVariants}
-        >
-          {jobsList.map((job, index) => (
-            <motion.div
-              key={job?._id || index}
-              custom={index}
-              variants={cardVariants}
-            >
-              <JobCard job={job} />
-            </motion.div>
-          ))}
-        </motion.div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="jobs-grid"
+            className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6"
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            {jobsList.map((job, index) => (
+              <motion.div
+                key={job?._id || index}
+                custom={index}
+                variants={cardVariants}
+                layout
+              >
+                <JobCard job={job} />
+              </motion.div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
       )}
     </div>
   );
@@ -78,17 +89,16 @@ const Jobs = () => {
   return (
     <div className="w-full mx-auto py-10">
       <div className="w-full grid grid-cols-1 xl:grid-cols-4 xl:gap-y-0 gap-y-10 xl:gap-x-10 gap-x-0">
-        {/* Filter section */}
         <motion.div
           className="md:col-span-1"
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.3 }}
+          layout
         >
           <FilterCard />
         </motion.div>
 
-        {/* Jobs section with tabs */}
         <div className="lg:col-span-3">
           <Tabs defaultValue="available" className="w-full">
             <div className="mb-6">
@@ -108,13 +118,15 @@ const Jobs = () => {
               </TabsList>
             </div>
 
-            <TabsContent value="available" className="mt-0">
-              <JobsGrid jobsList={availableJobs} />
-            </TabsContent>
+            <AnimatePresence mode="wait">
+              <TabsContent value="available" className="mt-0">
+                <JobsGrid jobsList={availableJobs} />
+              </TabsContent>
 
-            <TabsContent value="applied" className="mt-0">
-              <JobsGrid jobsList={appliedJobs} />
-            </TabsContent>
+              <TabsContent value="applied" className="mt-0">
+                <JobsGrid jobsList={appliedJobs} />
+              </TabsContent>
+            </AnimatePresence>
           </Tabs>
         </div>
       </div>

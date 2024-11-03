@@ -26,7 +26,7 @@ import ImagePreviewModal from "./ImagePreviewModal";
 
 const ProfileCard = ({ setOpen }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [isImagePreviewOpen,setIsImagePreviewOpen]=useState(false)
+  const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const { user } = useSelector((store) => store.auth);
   // console.log(user)
   useEffect(() => {
@@ -278,7 +278,10 @@ const AppliedJobsTable = () => {
               {allAppliedJobs?.map((appliedJob, index) => (
                 <React.Fragment key={index}>
                   <motion.tr
-                    className="hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors duration-200"
+                    onClick={() =>
+                      setExpandedJob(expandedJob === index ? null : index)
+                    }
+                    className="hover:bg-gray-100 cursor-pointer dark:hover:bg-gray-800/50 transition-colors duration-200"
                     variants={tableRowVariants}
                     initial="hidden"
                     animate="visible"
@@ -312,9 +315,6 @@ const AppliedJobsTable = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       <motion.button
-                        onClick={() =>
-                          setExpandedJob(expandedJob === index ? null : index)
-                        }
                         className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
