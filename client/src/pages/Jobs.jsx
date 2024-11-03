@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React from "react";
+import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FilterCard from "./FilterCard";
@@ -8,78 +8,86 @@ import useGetAllJobs from "@/hooks/useGetAllJobs";
 import { FolderSearch } from "lucide-react";
 
 const Jobs = () => {
-  const [hasAnimated, setHasAnimated] = useState(false);
   useGetAllJobs();
   const { jobs = [] } = useSelector((store) => store.job);
   const { user } = useSelector((store) => store.auth);
 
-  // Reset animation state when component unmounts
-  useEffect(() => {
-    setHasAnimated(false);
-    return () => setHasAnimated(false);
-  }, []);
-
-  const appliedJobs = jobs?.filter((job) =>
-    job?.applications?.some(
-      (application) => application?.applicant === user?._id
-    )
-  ) || [];
-
-  const availableJobs = jobs?.filter(
-    (job) =>
-      !job?.applications?.some(
+  const appliedJobs =
+    jobs?.filter((job) =>
+      job?.applications?.some(
         (application) => application?.applicant === user?._id
       )
-  ) || [];
+    ) || [];
 
-  const JobsGrid = ({ jobsList = [] }) => {
-    if (!jobsList || jobsList?.length === 0) {
-      return (
-        <div className="flex flex-col gap-2 items-center justify-center mb-8 rounded-lg">
-          <FolderSearch className="w-8 h-8 text-slate-400" />
-          <h3 className="text-xl font-semibold dark:text-slate-200 text-slate-500">
-            No Jobs Found
-          </h3>
-        </div>
-      );
-    }
+  const availableJobs =
+    jobs?.filter(
+      (job) =>
+        !job?.applications?.some(
+          (application) => application?.applicant === user?._id
+        )
+    ) || [];
 
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
-        {jobsList.map((job, index) => (
-          <motion.div
-            key={job?._id}
-            initial={!hasAnimated ? { opacity: 0, y: 20 } : false}
-            animate={!hasAnimated ? { opacity: 1, y: 0 } : false}
-            transition={{
-              duration: 0.3,
-              delay: index * 0.1,
-            }}
-            onAnimationComplete={() => {
-              if (index === jobsList.length - 1) {
-                setHasAnimated(true);
-              }
-            }}
-          >
-            <JobCard job={job} />
-          </motion.div>
-        ))}
-      </div>
-    );
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.2,
+        duration: 0.4,
+      },
+    }),
   };
+
+  const JobsGrid = ({ jobsList = [] }) => (
+    <div className="w-full">
+      {!jobsList || jobsList?.length === 0 ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="flex flex-col gap-2 items-center justify-center mb-8 rounded-lg">
+            <FolderSearch className="w-8 h-8 text-slate-400" />
+            <h3 className="text-xl font-semibold dark:text-slate-200 text-slate-500">
+              No Jobs Found
+            </h3>
+          </div>
+        </motion.div>
+      ) : (
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6"
+          initial="hidden"
+          animate="visible"
+        >
+          {jobsList.map((job, index) => (
+            <motion.div
+              key={job?._id || index}
+              custom={index}
+              variants={cardVariants}
+            >
+              <JobCard job={job} />
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
+    </div>
+  );
 
   return (
     <div className="w-full mx-auto py-10">
       <div className="w-full grid grid-cols-1 xl:grid-cols-4 xl:gap-y-0 gap-y-10 xl:gap-x-10 gap-x-0">
+        {/* Filter section */}
         <motion.div
           className="md:col-span-1"
-          initial={!hasAnimated ? { opacity: 0, x: -20 } : false}
-          animate={!hasAnimated ? { opacity: 1, x: 0 } : false}
-          transition={{ duration: 0.3 }}
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
         >
           <FilterCard />
         </motion.div>
 
+        {/* Jobs section with tabs */}
         <div className="lg:col-span-3">
           <Tabs defaultValue="available" className="w-full">
             <div className="mb-6">
