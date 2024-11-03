@@ -28,6 +28,7 @@ const ProfileCard = ({ setOpen }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isImagePreviewOpen,setIsImagePreviewOpen]=useState(false)
   const { user } = useSelector((store) => store.auth);
+  // console.log(user)
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => setIsVisible(entry.isIntersecting),
@@ -73,7 +74,7 @@ const ProfileCard = ({ setOpen }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
               >
-                {user.fullName} (
+                {user?.fullName} (
                 {user?.gender?.charAt(0).toUpperCase() +
                   user?.gender?.slice(1).toLowerCase()}
                 )
