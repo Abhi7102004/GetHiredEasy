@@ -116,7 +116,7 @@ const Applicants = () => {
           title="Total Applications"
           value={statusCounts.total}
           icon={Users}
-          className="bg-blue-50 dark:bg-blue-700/80 text-blue-600 dark:text-blue-300"
+          className="bg-green-500 dark:bg-blue-700/80 text-blue-600 dark:text-blue-300"
         />
         <StatCard
           title="Pending Review"
